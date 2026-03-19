@@ -139,4 +139,12 @@ VALUES
 
     ('Hedgehog', 'Mammal',
      'Hedgehogs are introduced animals that prey on native insects, eggs, and small wildlife.',
-     'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/65757ea00d7f44908baae9dfa7864a81.jpg');
+     'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/65757ea00d7f44908baae9dfa7864a81.jpg'),
+
+    ('Stoat', 'Mammal',
+     'Stoats are invasive predators introduced to control rabbits but now threaten native birds and wildlife.',
+     'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/3e10be00dee64aaeb5f35ca3d64a4270.jpg'),
+
+    ('Weasel', 'Mammal',
+     'Weasels are small predatory mammals that prey on native birds, eggs, and insects.',
+     'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/f795d88189724a24adc18fdb58737794.aspx');
