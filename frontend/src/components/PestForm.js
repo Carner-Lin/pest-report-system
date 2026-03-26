@@ -1,8 +1,19 @@
 import { useEffect, useState } from "react";
 
-function PestForm() {
+function PestForm({ onSuccess }) {
     const [pests, setPests] = useState([]);
-    const [selectedPest, setSelectedPest] = useState("");
+    const [message, setMessage] = useState("");
+
+    const [formData, setFormData] = useState({
+        user_id: null,
+        pest_id: "",
+        custom_pest_name: "",
+        description: "",
+        location_name: "",
+        latitude: "",
+        longitude: "",
+        image_url: ""
+    });
 
     useEffect(() => {
         fetch("http://localhost:5000/api/pests")
@@ -11,23 +22,155 @@ function PestForm() {
             .catch((err) => console.error("Error fetching pests:", err));
     }, []);
 
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!formData.pest_id && !formData.custom_pest_name.trim()) {
+            setMessage("Please select a pest or enter a pest name.");
+            return;
+        }
+
+        const payload = {
+            ...formData,
+            pest_id: formData.pest_id ? Number(formData.pest_id) : null,
+            latitude: formData.latitude ? Number(formData.latitude) : null,
+            longitude: formData.longitude ? Number(formData.longitude) : null,
+            image_url: formData.image_url || null
+        };
+
+        fetch("http://localhost:5000/api/reports", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setMessage(data.message || "Report submitted successfully.");
+
+                setFormData({
+                    user_id: null,
+                    pest_id: "",
+                    custom_pest_name: "",
+                    description: "",
+                    location_name: "",
+                    latitude: "",
+                    longitude: "",
+                    image_url: ""
+                });
+
+                if (onSuccess) {
+                    setTimeout(() => {
+                        onSuccess();
+                    }, 500);
+                }
+            })
+            .catch((err) => {
+                console.error("Error submitting report:", err);
+                setMessage("Failed to submit report.");
+            });
+    };
+
     return (
         <div>
-            <h2>Submit a Pest Report</h2>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Select a pest:</label>
+                    <br />
+                    <select
+                        name="pest_id"
+                        value={formData.pest_id}
+                        onChange={handleChange}
+                    >
+                        <option value="">-- Select from database --</option>
+                        {pests.map((pest) => (
+                            <option key={pest.id} value={pest.id}>
+                                {pest.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
-            <label>Select a pest:</label>
-            <br />
-            <select
-                value={selectedPest}
-                onChange={(e) => setSelectedPest(e.target.value)}
-            >
-                <option value="">-- Select from database --</option>
-                {pests.map((pest) => (
-                    <option key={pest.id} value={pest.id}>
-                        {pest.name}
-                    </option>
-                ))}
-            </select>
+                <br />
+
+                <div>
+                    <label>Or enter a pest name manually:</label>
+                    <br />
+                    <input
+                        type="text"
+                        name="custom_pest_name"
+                        value={formData.custom_pest_name}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Description:</label>
+                    <br />
+                    <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Location name:</label>
+                    <br />
+                    <input
+                        type="text"
+                        name="location_name"
+                        value={formData.location_name}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Latitude:</label>
+                    <br />
+                    <input
+                        type="number"
+                        step="any"
+                        name="latitude"
+                        value={formData.latitude}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Longitude:</label>
+                    <br />
+                    <input
+                        type="number"
+                        step="any"
+                        name="longitude"
+                        value={formData.longitude}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <br />
+
+                <button type="submit">Submit Report</button>
+            </form>
+
+            {message && <p>{message}</p>}
         </div>
     );
 }
