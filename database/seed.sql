@@ -145,6 +145,26 @@ VALUES
      'Stoats are invasive predators introduced to control rabbits but now threaten native birds and wildlife.',
      'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/3e10be00dee64aaeb5f35ca3d64a4270.jpg'),
 
+    ('Colorado Potato Beetle', 'Insect',
+     'The Colorado potato beetle poses a huge potential threat to New Zealand''s potato growers.',
+     'Not assessed', TRUE, 'https://apps.mpi.govt.nz/DesktopModules/DigArticle/MediaHandler.ashx?portalid=2&moduleid=3804&mediaid=347&width=175&height=200&scale=2'),
+
+    ('West Indian drywood termite', 'Insect',
+     'The West Indian drywood termite is a serious wood boring insect.',
+     'Regulated', TRUE, 'https://apps.mpi.govt.nz/DesktopModules/DigArticle/MediaHandler.ashx?portalid=2&moduleid=3804&mediaid=177&width=175&height=200&scale=2'),
+
+    ('Johnson grass', 'Plant',
+     'An invasive grass that spreads quickly and competes with crops and native plants.',
+     'Regulated', TRUE, 'https://apps.mpi.govt.nz/DesktopModules/DigArticle/MediaHandler.ashx?portalid=2&moduleid=3804&mediaid=291&width=175&height=200&scale=2'),
+
+    ('Water Hyacinth', 'Plant',
+     'A fast-growing aquatic plant that forms dense mats, blocking sunlight and disrupting aquatic ecosystems.',
+     'Regulated', TRUE, 'https://apps.mpi.govt.nz/DesktopModules/DigArticle/MediaHandler.ashx?portalid=2&moduleid=3804&mediaid=413&width=175&height=200&scale=2'),
+
     ('Weasel', 'Mammal',
      'Weasels are small predatory mammals that prey on native birds, eggs, and insects.',
      'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/f795d88189724a24adc18fdb58737794.aspx');
+
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE pests;
+SET FOREIGN_KEY_CHECKS = 1;
