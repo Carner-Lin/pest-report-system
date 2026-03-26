@@ -10,7 +10,7 @@ function Home() {
                 <div className="search-container">
                     <input
                         type="text"
-                        placeholder="Start tracking different pests in New Zealand"
+                        placeholder="Start tracking pest in New Zealand"
                         className="search-input"
                     />
                     <button className="search-btn">Search</button>
