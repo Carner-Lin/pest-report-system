@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import LocationPickerMap from "./LocationPickerMap";
 
 function PestForm({ onSuccess }) {
     const [pests, setPests] = useState([]);
@@ -29,6 +30,14 @@ function PestForm({ onSuccess }) {
         });
     };
 
+    const handleLocationSelect = ({ lat, lng }) => {
+        setFormData((prev) => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng
+        }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -37,11 +46,16 @@ function PestForm({ onSuccess }) {
             return;
         }
 
+        if (!formData.latitude || !formData.longitude) {
+            setMessage("Please select a location on the map.");
+            return;
+        }
+
         const payload = {
             ...formData,
             pest_id: formData.pest_id ? Number(formData.pest_id) : null,
-            latitude: formData.latitude ? Number(formData.latitude) : null,
-            longitude: formData.longitude ? Number(formData.longitude) : null,
+            latitude: Number(formData.latitude),
+            longitude: Number(formData.longitude),
             image_url: formData.image_url || null
         };
 
@@ -140,32 +154,28 @@ function PestForm({ onSuccess }) {
                 <br />
 
                 <div>
-                    <label>Latitude:</label>
-                    <br />
-                    <input
-                        type="number"
-                        step="any"
-                        name="latitude"
-                        value={formData.latitude}
-                        onChange={handleChange}
+                    <label>Select location on the map:</label>
+                    <LocationPickerMap
+                        selectedLocation={
+                            formData.latitude && formData.longitude
+                                ? {
+                                    lat: Number(formData.latitude),
+                                    lng: Number(formData.longitude)
+                                }
+                                : null
+                        }
+                        onSelectLocation={handleLocationSelect}
                     />
                 </div>
 
                 <br />
 
-                <div>
-                    <label>Longitude:</label>
-                    <br />
-                    <input
-                        type="number"
-                        step="any"
-                        name="longitude"
-                        value={formData.longitude}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <br />
+                {formData.latitude && formData.longitude && (
+                    <p>
+                        Selected coordinates: {Number(formData.latitude).toFixed(6)},{" "}
+                        {Number(formData.longitude).toFixed(6)}
+                    </p>
+                )}
 
                 <button type="submit">Submit Report</button>
             </form>

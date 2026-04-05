@@ -13,7 +13,14 @@ router.get("/", (req, res) => {
 
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json(err);
-        res.json(results);
+
+        const formattedResults = results.map((report) => ({
+            ...report,
+            latitude: report.latitude !== null ? Number(report.latitude) : null,
+            longitude: report.longitude !== null ? Number(report.longitude) : null
+        }));
+
+        res.json(formattedResults);
     });
 });
 
