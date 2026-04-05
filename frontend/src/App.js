@@ -1,12 +1,32 @@
+import { Link, Routes, Route } from "react-router-dom";
 import "./App.css";
-import PestForm from "./components/PestForm";
+import Home from "./pages/Home";
+import PestEncyclopedia from "./pages/PestEncyclopedia";
 
 function App() {
     return (
-        <div className="App">
-            <h1>Pest Reporting System</h1>
-            <p>Report and track pest sightings in New Zealand.</p>
-            <PestForm />
+        <div className="app-container">
+            <nav className="navbar">
+                <div className="navbar-left">
+                    <h1 className="navbar-title">Pest Reporting System</h1>
+
+                    <div className="nav-links">
+                        <Link to="/" className="nav-btn">Home</Link>
+                        <Link to="/reports" className="nav-btn">Pest Reports</Link>
+                        <Link to="/encyclopedia" className="nav-btn">Pest Encyclopedia</Link>
+                    </div>
+                </div>
+
+                <div className="navbar-right">
+                    <Link to="/login" className="nav-btn">Login</Link>
+                    <Link to="/register" className="nav-btn">Register</Link>
+                </div>
+            </nav>
+
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/encyclopedia" element={<PestEncyclopedia />} />
+            </Routes>
         </div>
     );
 }
