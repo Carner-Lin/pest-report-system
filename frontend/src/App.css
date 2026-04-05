@@ -275,6 +275,50 @@ button {
   color: #777;
 }
 
+/* Pest Reports */
+.reports-desc {
+  margin-bottom: 25px;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.reports-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.report-card {
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  padding: 15px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.report-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #246527;
+}
+
+.report-card p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.report-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  margin-top: 12px;
+  border-radius: 8px;
+  background: #f3f3f3;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .navbar {

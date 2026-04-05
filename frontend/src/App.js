@@ -2,6 +2,7 @@ import { Link, Routes, Route } from "react-router-dom";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import "./App.css";
 import Home from "./pages/Home";
+import PestReports from "./pages/PestReports";
 import PestEncyclopedia from "./pages/PestEncyclopedia";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
 
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/reports" element={<PestReports />} />
                     <Route path="/encyclopedia" element={<PestEncyclopedia />} />
                 </Routes>
             </div>
