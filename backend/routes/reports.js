@@ -5,11 +5,19 @@ const db = require("../db");
 // GET /api/reports
 router.get("/", (req, res) => {
     const sql = `
-    SELECT pest_reports.*, pests.name AS pest_name
-    FROM pest_reports
-    LEFT JOIN pests ON pest_reports.pest_id = pests.id
-    ORDER BY report_date DESC
-  `;
+        SELECT
+            pest_reports.*,
+            pests.name AS pest_name,
+            pests.organism_type,
+            pests.regulatory_status,
+            pests.notifiable,
+            pests.description AS pest_description,
+            users.username
+        FROM pest_reports
+                 LEFT JOIN pests ON pest_reports.pest_id = pests.id
+                 LEFT JOIN users ON pest_reports.user_id = users.id
+        ORDER BY report_date DESC
+    `;
 
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json(err);
@@ -24,7 +32,7 @@ router.get("/", (req, res) => {
     });
 });
 
-// POST /api/report
+// POST /api/reports
 router.post("/", (req, res) => {
     const {
         user_id,
@@ -42,12 +50,13 @@ router.post("/", (req, res) => {
     }
 
     const sql = `
-    INSERT INTO pest_reports
-    (user_id, pest_id, custom_pest_name, description, location_name, latitude, longitude, image_url)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+        INSERT INTO pest_reports
+        (user_id, pest_id, custom_pest_name, description, location_name, latitude, longitude, image_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-    db.query(sql,
+    db.query(
+        sql,
         [user_id, pest_id, custom_pest_name, description, location_name, latitude, longitude, image_url],
         (err, result) => {
             if (err) return res.status(500).json(err);

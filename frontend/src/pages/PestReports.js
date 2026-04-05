@@ -1,8 +1,43 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Map, Marker } from "@vis.gl/react-google-maps";
+
+function getDisplayPestName(report) {
+    return report.pest_name || report.custom_pest_name || "Unknown Pest";
+}
+
+function getDisplayUsername(report) {
+    return report.username || "Anonymous User";
+}
+
+function getDisplayDate(report) {
+    if (!report.report_date) return "Unknown date";
+
+    return new Date(report.report_date).toLocaleDateString("en-NZ", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+}
+
+function getCityLevelLocation(locationName) {
+    if (!locationName) return "Unknown city";
+
+    const parts = locationName
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+    if (parts.length >= 2) {
+        return parts[parts.length - 2];
+    }
+
+    return locationName;
+}
 
 function PestReports() {
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedReport, setSelectedReport] = useState(null);
 
     useEffect(() => {
         fetch("http://localhost:5000/api/reports")
@@ -17,12 +52,27 @@ function PestReports() {
             });
     }, []);
 
+    const validSelectedLocation = useMemo(() => {
+        if (
+            !selectedReport ||
+            selectedReport.latitude == null ||
+            selectedReport.longitude == null
+        ) {
+            return null;
+        }
+
+        return {
+            lat: Number(selectedReport.latitude),
+            lng: Number(selectedReport.longitude),
+        };
+    }, [selectedReport]);
+
     return (
         <main className="main-content">
             <h2>Pest Reports</h2>
             <p className="reports-desc">
-                This page shows recently submitted pest reports, including pest type,
-                location, description, and report date.
+                Browse recently submitted pest reports and open each card to view full
+                report details.
             </p>
 
             {loading ? (
@@ -30,50 +80,143 @@ function PestReports() {
             ) : reports.length === 0 ? (
                 <p>No pest reports have been submitted yet.</p>
             ) : (
-                <div className="reports-list">
+                <div className="report-card-grid">
                     {reports.map((report) => (
-                        <div key={report.id} className="report-card">
-                            <h3>
-                                {report.pest_name ||
-                                    report.custom_pest_name ||
-                                    "Unknown pest"}
+                        <button
+                            key={report.id}
+                            type="button"
+                            className="report-summary-card"
+                            onClick={() => setSelectedReport(report)}
+                        >
+                            <h3 className="report-summary-title">
+                                {getDisplayPestName(report)}
                             </h3>
 
                             <p>
-                                <strong>Location:</strong>{" "}
-                                {report.location_name || "Not provided"}
+                                <strong>Uploaded by:</strong> {getDisplayUsername(report)}
                             </p>
 
                             <p>
-                                <strong>Description:</strong>{" "}
-                                {report.description || "No description"}
+                                <strong>Date:</strong> {getDisplayDate(report)}
                             </p>
 
                             <p>
-                                <strong>Coordinates:</strong>{" "}
-                                {report.latitude != null && report.longitude != null
-                                    ? `${Number(report.latitude).toFixed(6)}, ${Number(
-                                        report.longitude
-                                    ).toFixed(6)}`
-                                    : "Not provided"}
+                                <strong>Area:</strong> {getCityLevelLocation(report.location_name)}
                             </p>
-
-                            <p>
-                                <strong>Reported on:</strong>{" "}
-                                {report.report_date
-                                    ? new Date(report.report_date).toLocaleString()
-                                    : "Unknown date"}
-                            </p>
-
-                            {report.image_url && (
-                                <img
-                                    src={report.image_url}
-                                    alt={report.pest_name || report.custom_pest_name || "Pest"}
-                                    className="report-image"
-                                />
-                            )}
-                        </div>
+                        </button>
                     ))}
+                </div>
+            )}
+
+            {selectedReport && (
+                <div
+                    className="modal-overlay"
+                    onClick={() => setSelectedReport(null)}
+                >
+                    <div
+                        className="report-detail-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="report-detail-header-bar">
+                            <h2>Report Details</h2>
+                            <button
+                                type="button"
+                                className="close-btn"
+                                onClick={() => setSelectedReport(null)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="report-detail-body">
+                            <div className="report-detail-top">
+                                <div className="report-detail-left">
+                                    <h3 className="report-detail-pest-title">
+                                        {getDisplayPestName(selectedReport)}
+                                    </h3>
+
+                                    <div className="report-meta-row">
+                                        <p>
+                                            <strong>Uploaded by:</strong>{" "}
+                                            {getDisplayUsername(selectedReport)}
+                                        </p>
+                                        <p>
+                                            <strong>Date:</strong>{" "}
+                                            {getDisplayDate(selectedReport)}
+                                        </p>
+                                    </div>
+
+                                    <p>
+                                        <strong>Pest type:</strong>{" "}
+                                        {selectedReport.organism_type || "Unknown"}
+                                    </p>
+
+                                    <p>
+                                        <strong>Status:</strong>{" "}
+                                        {selectedReport.regulatory_status || "Unknown"}
+                                    </p>
+
+                                    <p>
+                                        <strong>Notifiable:</strong>{" "}
+                                        {selectedReport.notifiable ? "Yes" : "No"}
+                                    </p>
+
+                                    <p>
+                                        <strong>Description:</strong>{" "}
+                                        {selectedReport.description ||
+                                            selectedReport.pest_description ||
+                                            "No description"}
+                                    </p>
+
+                                    <p>
+                                        <strong>Detailed location:</strong>{" "}
+                                        {selectedReport.location_name || "Not provided"}
+                                    </p>
+                                </div>
+
+                                <div className="report-detail-right">
+                                    <div className="report-image-box">
+                                        {selectedReport.image_url ? (
+                                            <img
+                                                src={selectedReport.image_url}
+                                                alt={getDisplayPestName(selectedReport)}
+                                                className="report-detail-image"
+                                            />
+                                        ) : (
+                                            <div className="report-image-placeholder">
+                                                No image uploaded
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="report-detail-map-section">
+                                <h4>Reported Location</h4>
+
+                                {validSelectedLocation ? (
+                                    <div
+                                        className="report-detail-map-wrapper"
+                                        onWheel={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <Map
+                                            defaultCenter={validSelectedLocation}
+                                            defaultZoom={13}
+                                            gestureHandling="greedy"
+                                            style={{ width: "100%", height: "320px" }}
+                                        >
+                                            <Marker position={validSelectedLocation} />
+                                        </Map>
+                                    </div>
+                                ) : (
+                                    <p>No map location available for this report.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </main>

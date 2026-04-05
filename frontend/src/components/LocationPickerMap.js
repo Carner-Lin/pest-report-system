@@ -30,7 +30,7 @@ function LocationPickerMap({ selectedLocation, onSelectLocation }) {
         >
             <Map
                 defaultCenter={selectedLocation || { lat: -37.787, lng: 175.279 }}
-                defaultZoom={12}
+                defaultZoom={14}
                 gestureHandling="greedy"
                 style={{ width: "100%", height: "300px" }}
             >
