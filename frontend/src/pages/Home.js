@@ -1,11 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PestForm from "../components/PestForm";
-import { Map, Marker, InfoWindow } from "@vis.gl/react-google-maps";
+import SearchResultsPanel from "../components/SearchResultsPanel";
+import ReportDetailModal from "../components/ReportDetailModal";
+import HomeMap from "../components/HomeMap";
 
 function Home() {
     const [showForm, setShowForm] = useState(false);
     const [reports, setReports] = useState([]);
     const [selectedReport, setSelectedReport] = useState(null);
+    const [mapFocusReport, setMapFocusReport] = useState(null);
+
+    const [searchText, setSearchText] = useState("");
+    const [submittedSearch, setSubmittedSearch] = useState("");
+    const [showSearchResults, setShowSearchResults] = useState(true);
+
+    const [detailReport, setDetailReport] = useState(null);
 
     const fetchReports = () => {
         fetch("http://localhost:5000/api/reports")
@@ -18,20 +27,59 @@ function Home() {
         fetchReports();
     }, []);
 
-    const validReports = reports.filter(
-        (report) => report.latitude !== null && report.longitude !== null
-    );
+    const filteredReports = useMemo(() => {
+        const keyword = submittedSearch.trim().toLowerCase();
+
+        if (!keyword) return [];
+
+        return reports.filter((report) => {
+            const pestName = (
+                report.pest_name ||
+                report.custom_pest_name ||
+                ""
+            ).toLowerCase();
+
+            return pestName.includes(keyword);
+        });
+    }, [reports, submittedSearch]);
+
+    const handleSearchSubmit = () => {
+        const keyword = searchText.trim();
+        setSubmittedSearch(keyword);
+        setShowSearchResults(true);
+    };
+
+    const handleSearchKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            handleSearchSubmit();
+        }
+    };
+
+    const handleFocusMap = (report) => {
+        setMapFocusReport(report);
+        setSelectedReport(report);
+    };
 
     return (
         <main className="main-content">
             <div className="top-bar">
-                <div className="search-container">
+                <div className="search-container home-search-container">
                     <input
                         type="text"
                         placeholder="Start tracking pest in New Zealand"
                         className="search-input"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
                     />
-                    <button className="search-btn">Search</button>
+                    <button
+                        className="search-btn"
+                        type="button"
+                        onClick={handleSearchSubmit}
+                    >
+                        Search
+                    </button>
                 </div>
 
                 <button className="report-btn" onClick={() => setShowForm(true)}>
@@ -39,57 +87,34 @@ function Home() {
                 </button>
             </div>
 
+            {submittedSearch.trim() && (
+                <SearchResultsPanel
+                    reports={filteredReports}
+                    expanded={showSearchResults}
+                    onToggle={() => setShowSearchResults((prev) => !prev)}
+                    onFocusMap={handleFocusMap}
+                    onViewDetail={(report) => setDetailReport(report)}
+                />
+            )}
+
             <h2>Recent Pest Reports Map</h2>
 
-            <div
-                className="home-map-wrapper"
-                onWheel={(e) => e.stopPropagation()}
-            >
-                <Map
-                    defaultCenter={{ lat: -37.787, lng: 175.279 }}
-                    defaultZoom={14}
-                    gestureHandling="greedy"
-                    style={{ width: "100%", height: "700px" }}
-                >
-                    {validReports.map((report) => (
-                        <Marker
-                            key={report.id}
-                            position={{
-                                lat: Number(report.latitude),
-                                lng: Number(report.longitude)
-                            }}
-                            onClick={() => setSelectedReport(report)}
-                        />
-                    ))}
-
-                    {selectedReport && (
-                        <InfoWindow
-                            position={{
-                                lat: Number(selectedReport.latitude),
-                                lng: Number(selectedReport.longitude)
-                            }}
-                            onCloseClick={() => setSelectedReport(null)}
-                        >
-                            <div>
-                                <strong>
-                                    {selectedReport.pest_name ||
-                                        selectedReport.custom_pest_name ||
-                                        "Unknown pest"}
-                                </strong>
-                                <p>{selectedReport.location_name || "No location name"}</p>
-                                <p>{selectedReport.description || "No description"}</p>
-                            </div>
-                        </InfoWindow>
-                    )}
-                </Map>
-            </div>
+            <HomeMap
+                reports={reports}
+                selectedReport={selectedReport}
+                setSelectedReport={setSelectedReport}
+                focusReport={mapFocusReport}
+            />
 
             {showForm && (
                 <div className="modal-overlay" onClick={() => setShowForm(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2>Submit a Pest Report</h2>
-                            <button className="close-btn" onClick={() => setShowForm(false)}>
+                            <button
+                                className="close-btn home-form-close-btn"
+                                onClick={() => setShowForm(false)}
+                            >
                                 ×
                             </button>
                         </div>
@@ -102,6 +127,13 @@ function Home() {
                         />
                     </div>
                 </div>
+            )}
+
+            {detailReport && (
+                <ReportDetailModal
+                    report={detailReport}
+                    onClose={() => setDetailReport(null)}
+                />
             )}
         </main>
     );

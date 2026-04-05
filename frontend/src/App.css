@@ -75,7 +75,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 30px;
+  margin-bottom: 18px;
 }
 
 /* Search Bar */
@@ -195,12 +195,15 @@ button {
   line-height: 1.2;
 }
 
+.home-form-close-btn {
+  color: black;
+}
+
 /* Close Button */
 .close-btn {
   background: transparent;
   border: none;
   font-size: 28px;
-  color: white;
   width: 36px;
   height: 36px;
   padding: 0;
@@ -211,13 +214,128 @@ button {
   justify-content: center;
 }
 
+/* Home Search Results */
+.home-search-results-section {
+  margin-bottom: 18px;
+}
+
+.results-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 6px;
+  background: #246527;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.results-toggle-icon {
+  display: inline-block;
+  transition: transform 0.28s ease;
+}
+
+.results-toggle-icon.expanded {
+  transform: rotate(0deg);
+}
+
+.home-search-results-collapse {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.28s ease, transform 0.28s ease;
+  transform-origin: top;
+}
+
+.home-search-results-collapse.expanded {
+  max-height: 520px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.home-search-results-collapse.collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.home-search-results-box {
+  border: 2px solid #246527;
+  border-radius: 12px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.home-search-results-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.home-result-card {
+  flex: 0 0 260px;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 14px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.home-result-card p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.home-result-title {
+  margin: 0 0 12px 0;
+  color: #246527;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.home-result-card-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.view-detail-btn,
+.focus-map-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.view-detail-btn {
+  background: #246527;
+  color: white;
+}
+
+.focus-map-btn {
+  background: #eef5ee;
+  color: #246527;
+  border: 1px solid #246527;
+}
+
+.search-empty-text {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
 /* Home Map */
 .home-map-wrapper {
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
   margin-top: 20px;
-  border: 1px solid #dcdcdc;
+  border: 2px solid #18421a;
   overscroll-behavior: contain;
 }
 
@@ -289,7 +407,7 @@ button {
   box-sizing: border-box;
   max-height: 98vh;
   overflow: hidden;
-  border: 5px solid #246527;
+  border: 3px solid #246527;
   box-shadow: 0 6px 18px rgba(36, 101, 39, 0.2);
 }
 
@@ -309,6 +427,10 @@ button {
   font-weight: bold;
   color: white;
   line-height: 1.2;
+}
+
+.report-detail-header-bar .close-btn {
+  color: white;
 }
 
 .report-detail-body {
@@ -545,5 +667,9 @@ button {
 
   .report-detail-body {
     padding: 10px 14px 14px 14px;
+  }
+
+  .home-result-card {
+    flex: 0 0 220px;
   }
 }
