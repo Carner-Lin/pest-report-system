@@ -170,35 +170,6 @@ button {
   align-items: center;
 }
 
-/* General small modal */
-.modal-content {
-  background: white;
-  width: 90%;
-  max-width: 600px;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: left;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.modal-header h2 {
-  margin: 0;
-  line-height: 1.2;
-}
-
-.home-form-close-btn {
-  color: black;
-}
-
 /* Close Button */
 .close-btn {
   background: transparent;
@@ -523,6 +494,173 @@ button {
   border-radius: 12px;
 }
 
+/* Submit Report Modal */
+.submit-report-modal {
+  position: relative;
+  background: rgba(7, 67, 37, 0.93);
+  width: 92%;
+  max-width: 1050px;
+  border-radius: 12px;
+  padding: 0;
+  box-sizing: border-box;
+  max-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 3px solid rgba(7, 67, 37, 0.93);
+  box-shadow: 0 6px 18px rgba(7, 67, 37, 0.18);
+}
+
+.submit-report-header-bar {
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  margin: 0;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit-report-header-bar h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  line-height: 1.2;
+}
+
+.submit-report-close-btn {
+  color: white;
+}
+
+.submit-report-body {
+  background: white;
+  padding: 14px 22px 20px 22px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.submit-report-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-report-top {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.submit-report-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.submit-form-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.submit-report-right {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.submit-image-box {
+  width: 100%;
+  min-height: 260px;
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+  background: rgba(7, 67, 37, 0.04);
+}
+
+.submit-image-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.submit-file-input {
+  margin-bottom: 12px;
+}
+
+.submit-image-preview-box {
+  width: 100%;
+  min-height: 220px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.submit-image-preview {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+}
+
+.submit-image-placeholder {
+  color: #777;
+  font-size: 14px;
+  text-align: center;
+}
+
+.submit-report-map-section {
+  margin-top: 6px;
+}
+
+.submit-report-map-section h4 {
+  margin: 0 0 8px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 18px;
+}
+
+.selected-coordinates-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.submit-report-btn {
+  margin-top: 16px;
+  align-self: flex-start;
+  padding: 10px 18px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.submit-report-btn:hover {
+  background-color: rgba(7, 67, 37, 1);
+}
+
+.submit-report-message {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #444;
+}
+
+.submit-inline-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
 /* Pest Encyclopedia */
 .pest-grid {
   display: grid;
@@ -805,6 +943,14 @@ button {
   .report-detail-body {
     padding: 12px 18px 18px 18px;
   }
+
+  .submit-report-top {
+    grid-template-columns: 1fr;
+  }
+
+  .submit-report-body {
+    padding: 12px 18px 18px 18px;
+  }
 }
 
 @media (max-width: 700px) {
@@ -868,5 +1014,17 @@ button {
 
   .home-result-card {
     flex: 0 0 220px;
+  }
+
+  .submit-report-header-bar h2 {
+    font-size: 17px;
+  }
+
+  .submit-report-body {
+    padding: 10px 14px 14px 14px;
+  }
+
+  .submit-inline-fields {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Map, Marker } from "@vis.gl/react-google-maps";
 
 function getDisplayPestName(report) {
@@ -20,6 +20,14 @@ function getDisplayDate(report) {
 }
 
 export default function ReportDetailModal({ report, onClose }) {
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, []);
+
     const validSelectedLocation = useMemo(() => {
         if (!report || report.latitude == null || report.longitude == null) {
             return null;
@@ -32,6 +40,24 @@ export default function ReportDetailModal({ report, onClose }) {
     }, [report]);
 
     if (!report) return null;
+
+    const displayType =
+        report.pest_type || report.organism_type || "Unknown";
+
+    const displayStatus =
+        report.status_choice || report.regulatory_status || "Unknown";
+
+    const displayNotifiable =
+        report.notifiable_choice ||
+        (report.notifiable === 1 ||
+        report.notifiable === "1" ||
+        report.notifiable === true
+            ? "Yes"
+            : report.notifiable === 0 ||
+            report.notifiable === "0" ||
+            report.notifiable === false
+                ? "No"
+                : "Unknown");
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -63,16 +89,15 @@ export default function ReportDetailModal({ report, onClose }) {
                             </div>
 
                             <p>
-                                <strong>Pest type:</strong> {report.organism_type || "Unknown"}
+                                <strong>Pest type:</strong> {displayType}
                             </p>
 
                             <p>
-                                <strong>Status:</strong>{" "}
-                                {report.regulatory_status || "Unknown"}
+                                <strong>Status:</strong> {displayStatus}
                             </p>
 
                             <p>
-                                <strong>Notifiable:</strong> {report.notifiable ? "Yes" : "No"}
+                                <strong>Notifiable:</strong> {displayNotifiable}
                             </p>
 
                             <p>

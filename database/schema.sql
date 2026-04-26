@@ -30,3 +30,8 @@ CREATE TABLE pests (
                        notifiable BOOLEAN DEFAULT FALSE,
                        image_url TEXT
 );
+
+ALTER TABLE pest_reports
+    ADD COLUMN pest_type VARCHAR(100) NULL,
+    ADD COLUMN status_choice VARCHAR(50) NULL,
+    ADD COLUMN notifiable_choice VARCHAR(50) NULL;

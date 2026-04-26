@@ -121,23 +121,28 @@ function Home() {
 
             {showForm && (
                 <div className="modal-overlay" onClick={() => setShowForm(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
+                    <div
+                        className="submit-report-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="submit-report-header-bar">
                             <h2>Submit a Pest Report</h2>
                             <button
-                                className="close-btn home-form-close-btn"
+                                className="close-btn submit-report-close-btn"
                                 onClick={() => setShowForm(false)}
                             >
                                 ×
                             </button>
                         </div>
 
-                        <PestForm
-                            onSuccess={() => {
-                                setShowForm(false);
-                                fetchReports();
-                            }}
-                        />
+                        <div className="submit-report-body">
+                            <PestForm
+                                onSuccess={() => {
+                                    setShowForm(false);
+                                    fetchReports();
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             )}

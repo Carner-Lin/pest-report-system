@@ -38,11 +38,14 @@ router.post("/", (req, res) => {
         user_id,
         pest_id,
         custom_pest_name,
+        pest_type,
         description,
         location_name,
         latitude,
         longitude,
-        image_url
+        image_url,
+        status_choice,
+        notifiable_choice
     } = req.body;
 
     if (!pest_id && !custom_pest_name) {
@@ -51,13 +54,37 @@ router.post("/", (req, res) => {
 
     const sql = `
         INSERT INTO pest_reports
-        (user_id, pest_id, custom_pest_name, description, location_name, latitude, longitude, image_url)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        (
+            user_id,
+            pest_id,
+            custom_pest_name,
+            pest_type,
+            description,
+            location_name,
+            latitude,
+            longitude,
+            image_url,
+            status_choice,
+            notifiable_choice
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
         sql,
-        [user_id, pest_id, custom_pest_name, description, location_name, latitude, longitude, image_url],
+        [
+            user_id,
+            pest_id,
+            custom_pest_name,
+            pest_type,
+            description,
+            location_name,
+            latitude,
+            longitude,
+            image_url,
+            status_choice,
+            notifiable_choice
+        ],
         (err, result) => {
             if (err) return res.status(500).json(err);
             res.json({ message: "Report submitted" });
