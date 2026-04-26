@@ -602,7 +602,7 @@ button {
 
 .auth-field label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   font-weight: bold;
   color: #333;
 }
@@ -615,6 +615,7 @@ button {
   border: none;
   border-radius: 6px;
   font-size: 14px;
+  margin-top: 7px;
 }
 
 .auth-submit-btn:hover {
@@ -647,6 +648,61 @@ button {
 }
 
 .auth-switch-text a:hover {
+  text-decoration: underline;
+}
+
+/* Login prompt modal */
+.login-prompt-modal {
+  position: relative;
+  width: 90%;
+  max-width: 360px;
+  background: white;
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  padding: 24px 20px 20px 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.login-prompt-modal h3 {
+  margin: 0 0 12px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 20px;
+}
+
+.login-prompt-modal p {
+  margin: 0 0 18px 0;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.login-prompt-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 26px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.to-login-link {
+  display: inline-block;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.to-login-link:hover {
   text-decoration: underline;
 }
 

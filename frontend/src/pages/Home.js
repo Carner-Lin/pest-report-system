@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import PestForm from "../components/PestForm";
 import SearchResultsPanel from "../components/SearchResultsPanel";
 import ReportDetailModal from "../components/ReportDetailModal";
@@ -6,6 +7,7 @@ import HomeMap from "../components/HomeMap";
 
 function Home() {
     const [showForm, setShowForm] = useState(false);
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [reports, setReports] = useState([]);
     const [selectedReport, setSelectedReport] = useState(null);
     const [mapFocusReport, setMapFocusReport] = useState(null);
@@ -61,6 +63,17 @@ function Home() {
         setSelectedReport(report);
     };
 
+    const handleReportClick = () => {
+        const currentUser = localStorage.getItem("currentUser");
+
+        if (!currentUser) {
+            setShowLoginPrompt(true);
+            return;
+        }
+
+        setShowForm(true);
+    };
+
     return (
         <main className="main-content">
             <div className="top-bar">
@@ -82,7 +95,7 @@ function Home() {
                     </button>
                 </div>
 
-                <button className="report-btn" onClick={() => setShowForm(true)}>
+                <button className="report-btn" onClick={handleReportClick}>
                     Report a Pest
                 </button>
             </div>
@@ -125,6 +138,33 @@ function Home() {
                                 fetchReports();
                             }}
                         />
+                    </div>
+                </div>
+            )}
+
+            {showLoginPrompt && (
+                <div className="modal-overlay" onClick={() => setShowLoginPrompt(false)}>
+                    <div
+                        className="login-prompt-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            className="login-prompt-close"
+                            onClick={() => setShowLoginPrompt(false)}
+                        >
+                            ×
+                        </button>
+
+                        <h3>Please login first</h3>
+                        <p>You need to log in before submitting a pest report.</p>
+
+                        <Link
+                            to="/login"
+                            className="to-login-link"
+                            onClick={() => setShowLoginPrompt(false)}
+                        >
+                            To Login
+                        </Link>
                     </div>
                 </div>
             )}
