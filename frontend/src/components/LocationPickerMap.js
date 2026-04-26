@@ -22,21 +22,74 @@ function MapClickHandler({ onSelectLocation }) {
     return null;
 }
 
+function MapLocationController({ selectedLocation }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (!map || !selectedLocation) return;
+
+        map.panTo(selectedLocation);
+        map.setZoom(15);
+    }, [map, selectedLocation]);
+
+    return null;
+}
+
 function LocationPickerMap({ selectedLocation, onSelectLocation }) {
+    const handleUseCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by this browser.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                onSelectLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                alert("Unable to get your current location.");
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    };
+
     return (
-        <div
-            className="location-picker-map"
-            onWheel={(e) => e.stopPropagation()}
-        >
-            <Map
-                defaultCenter={selectedLocation || { lat: -37.787, lng: 175.279 }}
-                defaultZoom={14}
-                gestureHandling="greedy"
-                style={{ width: "100%", height: "300px" }}
+        <div className="location-picker-wrapper">
+            <button
+                type="button"
+                className="current-location-btn"
+                onClick={handleUseCurrentLocation}
             >
-                <MapClickHandler onSelectLocation={onSelectLocation} />
-                {selectedLocation && <Marker position={selectedLocation} />}
-            </Map>
+                Use My Current Location
+            </button>
+
+            <div
+                className="location-picker-map"
+                onWheel={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+            >
+                <Map
+                    defaultCenter={{ lat: -37.787, lng: 175.279 }}
+                    defaultZoom={12}
+                    gestureHandling="greedy"
+                    style={{ width: "100%", height: "300px" }}
+                >
+                    <MapClickHandler onSelectLocation={onSelectLocation} />
+                    <MapLocationController selectedLocation={selectedLocation} />
+
+                    {selectedLocation && <Marker position={selectedLocation} />}
+                </Map>
+            </div>
         </div>
     );
 }

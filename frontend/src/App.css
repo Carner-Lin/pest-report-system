@@ -321,6 +321,24 @@ button {
   overscroll-behavior: contain;
 }
 
+.location-picker-wrapper {
+  width: 100%;
+}
+
+.current-location-btn {
+  margin-bottom: 10px;
+  padding: 8px 14px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.current-location-btn:hover {
+  background-color: #1c4e1e;
+}
+
 /* Pest Reports */
 .reports-desc {
   margin-bottom: 25px;
@@ -635,7 +653,7 @@ button {
 }
 
 .submit-report-btn {
-  margin-top: 16px;
+  margin-top: 9px;
   align-self: flex-start;
   padding: 10px 18px;
   background-color: rgba(7, 67, 37, 0.93);
