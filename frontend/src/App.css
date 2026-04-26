@@ -12,7 +12,7 @@ body {
 /* Navbar */
 .navbar {
   height: 75px;
-  background-color: #246527;
+  background-color: rgba(7, 67, 37, 0.93);
   color: white;
   display: flex;
   align-items: center;
@@ -95,7 +95,7 @@ body {
   box-sizing: border-box;
   padding: 0 12px;
   margin: 0;
-  border: 1px solid #246527;
+  border: 1px solid rgba(7, 67, 37, 0.93);
   border-right: none;
   border-radius: 5px 0 0 5px;
   font-size: 14px;
@@ -108,9 +108,9 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  border: 1px solid #246527;
+  border: 1px solid rgba(7, 67, 37, 0.93);
   border-radius: 0 5px 5px 0;
-  background-color: #246527;
+  background-color: rgba(7, 67, 37, 0.93);
   color: white;
   font-size: 14px;
   line-height: 1;
@@ -124,7 +124,7 @@ body {
 /* Report Button */
 .report-btn {
   padding: 10px 18px;
-  background-color: #246527;
+  background-color: rgba(7, 67, 37, 0.93);
   color: white;
   border: none;
   border-radius: 6px;
@@ -227,7 +227,7 @@ button {
   height: 34px;
   border: none;
   border-radius: 6px;
-  background: #246527;
+  background: rgba(7, 67, 37, 0.93);
   color: white;
   font-size: 20px;
   margin-bottom: 10px;
@@ -261,7 +261,7 @@ button {
 }
 
 .home-search-results-box {
-  border: 2px solid #246527;
+  border: 2px solid rgba(7, 67, 37, 0.93);
   border-radius: 12px;
   padding: 14px;
   background: #ffffff;
@@ -292,7 +292,7 @@ button {
 
 .home-result-title {
   margin: 0 0 12px 0;
-  color: #246527;
+  color: rgba(7, 67, 37, 0.93);
   font-size: 19px;
   font-weight: bold;
 }
@@ -313,14 +313,14 @@ button {
 }
 
 .view-detail-btn {
-  background: #246527;
+  background: rgba(7, 67, 37, 0.93);
   color: white;
 }
 
 .focus-map-btn {
   background: #eef5ee;
-  color: #246527;
-  border: 1px solid #246527;
+  color: rgba(7, 67, 37, 0.93);
+  border: 1px solid rgba(7, 67, 37, 0.93);
 }
 
 .search-empty-text {
@@ -391,7 +391,7 @@ button {
 
 .report-summary-title {
   margin: 0 0 14px 0;
-  color: #246527;
+  color: rgba(7, 67, 37, 0.93);
   font-size: 20px;
   font-weight: bold;
 }
@@ -399,7 +399,7 @@ button {
 /* Report Detail Modal */
 .report-detail-modal {
   position: relative;
-  background: #246527;
+  background: rgba(7, 67, 37, 0.93);
   width: 92%;
   max-width: 1050px;
   border-radius: 12px;
@@ -407,12 +407,12 @@ button {
   box-sizing: border-box;
   max-height: 98vh;
   overflow: hidden;
-  border: 3px solid #246527;
+  border: 3px solid rgba(7, 67, 37, 0.93);
   box-shadow: 0 6px 18px rgba(36, 101, 39, 0.2);
 }
 
 .report-detail-header-bar {
-  background-color: #246527;
+  background-color: rgba(7, 67, 37, 0.93);
   color: white;
   margin: 0;
   padding: 8px 18px;
@@ -458,7 +458,7 @@ button {
 
 .report-detail-pest-title {
   margin: 0 0 14px 0;
-  color: #246527;
+  color: rgba(7, 67, 37, 0.93);
   font-size: 28px;
   font-weight: bold;
 }
@@ -482,7 +482,7 @@ button {
 .report-image-box {
   width: 90%;
   min-height: 240px;
-  border: 2px solid #246527;
+  border: 2px solid rgba(7, 67, 37, 0.93);
   border-radius: 12px;
   padding: 10px;
   box-sizing: border-box;
@@ -507,7 +507,7 @@ button {
 
 .report-detail-map-section h4 {
   margin: 0 0 8px 0;
-  color: #246527;
+  color: rgba(7, 67, 37, 0.93);
   font-size: 18px;
 }
 
@@ -549,7 +549,7 @@ button {
 .pest-card h3 {
   margin-top: 0;
   margin-bottom: 10px;
-  color: #246527;
+  color: rgba(7, 67, 37, 0.93);
 }
 
 .pest-card p {
@@ -571,6 +571,83 @@ button {
   align-items: center;
   justify-content: center;
   color: #777;
+}
+
+/* Login and Register page */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: rgba(7, 67, 37, 0.93);
+}
+
+.auth-field {
+  margin-bottom: 16px;
+}
+
+.auth-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.auth-submit-btn:hover {
+  background-color: #1c4e1e;
+}
+
+.auth-success {
+  margin-top: 14px;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 14px;
+}
+
+.auth-error {
+  margin-top: 14px;
+  color: #c62828;
+  font-size: 14px;
+}
+
+.auth-switch-text {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+}
+
+.auth-switch-text a {
+  color: rgba(7, 67, 37, 0.93);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-switch-text a:hover {
+  text-decoration: underline;
 }
 
 /* Responsive */

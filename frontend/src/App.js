@@ -4,6 +4,8 @@ import "./App.css";
 import Home from "./pages/Home";
 import PestReports from "./pages/PestReports";
 import PestEncyclopedia from "./pages/PestEncyclopedia";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
     return (
@@ -34,6 +36,8 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/reports" element={<PestReports />} />
                     <Route path="/encyclopedia" element={<PestEncyclopedia />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                 </Routes>
             </div>
         </APIProvider>
