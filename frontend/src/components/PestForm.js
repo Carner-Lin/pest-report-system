@@ -5,6 +5,7 @@ function PestForm({ onSuccess }) {
     const [pests, setPests] = useState([]);
     const [message, setMessage] = useState("");
     const [imagePreview, setImagePreview] = useState("");
+    const [locationMessage, setLocationMessage] = useState("");
 
     const [formData, setFormData] = useState({
         user_id: null,
@@ -65,6 +66,22 @@ function PestForm({ onSuccess }) {
 
         if (!selectedPest) return;
 
+        let notifiableValue = "Uncertain";
+
+        if (
+            selectedPest.notifiable === 1 ||
+            selectedPest.notifiable === "1" ||
+            selectedPest.notifiable === true
+        ) {
+            notifiableValue = "Yes";
+        } else if (
+            selectedPest.notifiable === 0 ||
+            selectedPest.notifiable === "0" ||
+            selectedPest.notifiable === false
+        ) {
+            notifiableValue = "No";
+        }
+
         setFormData((prev) => ({
             ...prev,
             pest_id: selectedId,
@@ -72,16 +89,7 @@ function PestForm({ onSuccess }) {
             pest_type: selectedPest.organism_type || "",
             description: selectedPest.description || "",
             status_choice: selectedPest.regulatory_status || "Uncertain",
-            notifiable_choice:
-                selectedPest.notifiable === 1 ||
-                selectedPest.notifiable === "1" ||
-                selectedPest.notifiable === true
-                    ? "Yes"
-                    : selectedPest.notifiable === 0 ||
-                    selectedPest.notifiable === "0" ||
-                    selectedPest.notifiable === false
-                        ? "No"
-                        : "Uncertain"
+            notifiable_choice: notifiableValue
         }));
     };
 
@@ -92,26 +100,87 @@ function PestForm({ onSuccess }) {
             longitude: lng
         }));
 
+        setLocationMessage("");
+
         fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=en`
         )
             .then((res) => res.json())
             .then((data) => {
                 const address = data.address || {};
-                const cityLevel =
+
+                const street =
+                    [address.house_number, address.road]
+                        .filter(Boolean)
+                        .join(" ") || "";
+
+                const suburb =
+                    address.suburb ||
+                    address.neighbourhood ||
+                    address.hamlet ||
+                    "";
+
+                const city =
                     address.city ||
                     address.town ||
-                    address.suburb ||
+                    address.village ||
                     address.county ||
                     "";
 
+                const state = address.state || "";
+
+                const detailedLocation = [street, suburb, city, state]
+                    .filter(Boolean)
+                    .join(", ");
+
                 setFormData((prev) => ({
                     ...prev,
-                    location_name: cityLevel
+                    location_name: detailedLocation
                 }));
             })
             .catch((err) => {
                 console.error("Reverse geocoding error:", err);
+            });
+    };
+
+    const handleUseTypedLocation = () => {
+        const query = formData.location_name.trim();
+
+        if (!query) {
+            setLocationMessage("Please enter an address first.");
+            return;
+        }
+
+        setLocationMessage("");
+
+        fetch(
+            `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(
+                query
+            )}&limit=1&accept-language=en`
+        )
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data || data.length === 0) {
+                    setLocationMessage("Invalid address.");
+                    return;
+                }
+
+                const result = data[0];
+                const lat = Number(result.lat);
+                const lng = Number(result.lon);
+
+                setFormData((prev) => ({
+                    ...prev,
+                    latitude: lat,
+                    longitude: lng,
+                    location_name: result.display_name || prev.location_name
+                }));
+
+                setLocationMessage("");
+            })
+            .catch((err) => {
+                console.error("Geocoding error:", err);
+                setLocationMessage("Invalid address.");
             });
     };
 
@@ -137,7 +206,7 @@ function PestForm({ onSuccess }) {
         }
 
         if (!formData.latitude || !formData.longitude) {
-            setMessage("Please select a location on the map.");
+            setMessage("Please select a location on the map or validate the address.");
             return;
         }
 
@@ -181,6 +250,7 @@ function PestForm({ onSuccess }) {
                 });
 
                 setImagePreview("");
+                setLocationMessage("");
 
                 if (onSuccess) {
                     setTimeout(() => {
@@ -277,13 +347,25 @@ function PestForm({ onSuccess }) {
 
                     <div className="submit-form-field">
                         <label>Detailed location</label>
-                        <input
-                            type="text"
-                            name="location_name"
-                            value={formData.location_name}
-                            onChange={handleChange}
-                            placeholder="Auto-filled from selected map location"
-                        />
+                        <div className="location-input-row">
+                            <input
+                                type="text"
+                                name="location_name"
+                                value={formData.location_name}
+                                onChange={handleChange}
+                                placeholder="Enter address or use map selection"
+                            />
+                            <button
+                                type="button"
+                                className="location-search-btn"
+                                onClick={handleUseTypedLocation}
+                            >
+                                Locate
+                            </button>
+                        </div>
+                        {locationMessage && (
+                            <p className="location-error-text">{locationMessage}</p>
+                        )}
                     </div>
                 </div>
 

@@ -679,6 +679,37 @@ button {
   gap: 14px;
 }
 
+.location-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.location-input-row input {
+  flex: 1;
+}
+
+.location-search-btn {
+  margin-top: 5px;
+  padding: 8px 12px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.location-search-btn:hover {
+  background-color: #1c4e1e;
+}
+
+.location-error-text {
+  margin-top: 6px;
+  margin-bottom: 0;
+  color: #c62828;
+  font-size: 13px;
+}
+
 /* Pest Encyclopedia */
 .pest-grid {
   display: grid;
