@@ -1,4 +1,5 @@
-import { Link, Routes, Route } from "react-router-dom";
+import { Link, Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import "./App.css";
 import Home from "./pages/Home";
@@ -6,8 +7,53 @@ import PestReports from "./pages/PestReports";
 import PestEncyclopedia from "./pages/PestEncyclopedia";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
 function App() {
+    const [currentUser, setCurrentUser] = useState(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const userMenuRef = useRef(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const loadCurrentUser = () => {
+            const storedUser = localStorage.getItem("currentUser");
+            setCurrentUser(storedUser ? JSON.parse(storedUser) : null);
+        };
+
+        loadCurrentUser();
+
+        const handleUserChanged = () => {
+            loadCurrentUser();
+        };
+
+        const handleClickOutside = (event) => {
+            if (
+                userMenuRef.current &&
+                !userMenuRef.current.contains(event.target)
+            ) {
+                setShowUserMenu(false);
+            }
+        };
+
+        window.addEventListener("userChanged", handleUserChanged);
+        window.addEventListener("storage", handleUserChanged);
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            window.removeEventListener("userChanged", handleUserChanged);
+            window.removeEventListener("storage", handleUserChanged);
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("currentUser");
+        window.dispatchEvent(new Event("userChanged"));
+        setShowUserMenu(false);
+        navigate("/");
+    };
+
     return (
         <APIProvider
             apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
@@ -27,8 +73,42 @@ function App() {
                     </div>
 
                     <div className="navbar-right">
-                        <Link to="/login" className="nav-btn">Login</Link>
-                        <Link to="/register" className="nav-btn">Register</Link>
+                        {currentUser ? (
+                            <div className="nav-user-menu" ref={userMenuRef}>
+                                <button
+                                    type="button"
+                                    className="nav-user-btn"
+                                    onClick={() => setShowUserMenu((prev) => !prev)}
+                                >
+                                    {currentUser.username}  ▾
+                                </button>
+
+                                {showUserMenu && (
+                                    <div className="nav-user-dropdown">
+                                        <Link
+                                            to="/profile"
+                                            className="nav-user-dropdown-item"
+                                            onClick={() => setShowUserMenu(false)}
+                                        >
+                                            Profile
+                                        </Link>
+
+                                        <button
+                                            type="button"
+                                            className="nav-user-dropdown-item logout-item"
+                                            onClick={handleLogout}
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <Link to="/login" className="nav-btn">Login</Link>
+                                <Link to="/register" className="nav-btn">Register</Link>
+                            </>
+                        )}
                     </div>
                 </nav>
 
@@ -38,6 +118,7 @@ function App() {
                     <Route path="/encyclopedia" element={<PestEncyclopedia />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Routes>
             </div>
         </APIProvider>

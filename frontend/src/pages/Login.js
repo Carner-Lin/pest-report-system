@@ -41,6 +41,7 @@ function Login() {
             setMessage("Login successful.");
 
             localStorage.setItem("currentUser", JSON.stringify(data.user));
+            window.dispatchEvent(new Event("userChanged"));
         } catch (error) {
             console.error("Login error:", error);
             setMessage("Server error.");

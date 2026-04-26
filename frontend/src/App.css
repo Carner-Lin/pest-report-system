@@ -651,6 +651,70 @@ button {
   text-decoration: underline;
 }
 
+.nav-user-text {
+  color: white;
+  font-size: 16px;
+  padding: 8px 12px;
+  font-weight: bold;
+}
+
+/* User dropdown menu */
+.nav-user-menu {
+  position: relative;
+}
+
+.nav-user-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: bold;
+  margin-right: 27px;
+}
+
+.nav-user-dropdown {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  min-width: 140px;
+  background: white;
+  border: 1px solid rgba(7, 67, 37, 0.93);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.nav-user-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  background: white;
+  color: rgba(7, 67, 37, 0.93);
+  text-decoration: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+}
+
+.nav-user-dropdown-item:hover {
+  background: rgba(7, 67, 37, 0.08);
+}
+
+.logout-item {
+  cursor: pointer;
+}
+
+/* Profile page */
+.profile-info p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #333;
+}
+
 /* Login prompt modal */
 .login-prompt-modal {
   position: relative;
