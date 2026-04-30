@@ -85,7 +85,7 @@ export default function HomeMap({
         >
             <Map
                 defaultCenter={DEFAULT_CENTER}
-                defaultZoom={11}
+                defaultZoom={15}
                 gestureHandling="greedy"
                 style={{ width: "100%", height: "600px" }}
                 mapId="5fa018df7a7cece3bb08d70f"
