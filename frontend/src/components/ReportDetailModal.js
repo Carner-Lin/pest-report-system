@@ -19,7 +19,7 @@ function getDisplayDate(report) {
     });
 }
 
-export default function ReportDetailModal({ report, onClose }) {
+export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }) {
     useEffect(() => {
         document.body.style.overflow = "hidden";
 
@@ -127,6 +127,16 @@ export default function ReportDetailModal({ report, onClose }) {
                                     </div>
                                 )}
                             </div>
+
+                            {isAdmin && (
+                                <button
+                                    type="button"
+                                    className="report-delete-btn"
+                                    onClick={() => onDelete && onDelete(report.id)}
+                                >
+                                    Delete Report
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -145,13 +155,13 @@ export default function ReportDetailModal({ report, onClose }) {
                                     defaultCenter={validSelectedLocation}
                                     defaultZoom={13}
                                     gestureHandling="greedy"
-                                    style={{ width: "100%", height: "320px" }}
+                                    style={{ width: "100%", height: "380px" }}
                                 >
                                     <Marker position={validSelectedLocation} />
                                 </Map>
                             </div>
                         ) : (
-                            <p>No map location available for this report.</p>
+                            <p>No valid location available.</p>
                         )}
                     </div>
                 </div>

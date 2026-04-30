@@ -39,6 +39,9 @@ function PestReports() {
     const [loading, setLoading] = useState(true);
     const [selectedReport, setSelectedReport] = useState(null);
 
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+    const isAdmin = currentUser?.role === "admin";
+
     useEffect(() => {
         fetch("http://localhost:5000/api/reports")
             .then((res) => res.json())
@@ -51,6 +54,49 @@ function PestReports() {
                 setLoading(false);
             });
     }, []);
+
+    const handleDeleteReport = async (reportId) => {
+        if (!currentUser?.id) {
+            alert("Please login first.");
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this report?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/reports/${reportId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    currentUserId: currentUser.id,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || "Failed to delete report.");
+                return;
+            }
+
+            setReports((prev) => prev.filter((report) => report.id !== reportId));
+
+            if (selectedReport?.id === reportId) {
+                setSelectedReport(null);
+            }
+
+            alert("Report deleted successfully.");
+        } catch (error) {
+            console.error("Delete report error:", error);
+            alert("Server error.");
+        }
+    };
 
     return (
         <main className="main-content">
@@ -97,6 +143,8 @@ function PestReports() {
                 <ReportDetailModal
                     report={selectedReport}
                     onClose={() => setSelectedReport(null)}
+                    isAdmin={isAdmin}
+                    onDelete={handleDeleteReport}
                 />
             )}
         </main>

@@ -92,4 +92,48 @@ router.post("/", (req, res) => {
     );
 });
 
+// DELETE /api/reports/:id
+router.delete("/:id", (req, res) => {
+    const reportId = req.params.id;
+    const { currentUserId } = req.body;
+
+    if (!currentUserId) {
+        return res.status(400).json({ error: "Current user ID is required." });
+    }
+
+    const checkAdminSql = "SELECT role FROM users WHERE id = ?";
+
+    db.query(checkAdminSql, [currentUserId], (checkErr, checkResults) => {
+        if (checkErr) {
+            console.error("Check admin error:", checkErr);
+            return res.status(500).json({ error: "Database error." });
+        }
+
+        if (checkResults.length === 0) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        const currentUser = checkResults[0];
+
+        if (currentUser.role !== "admin") {
+            return res.status(403).json({ error: "Only admin can delete reports." });
+        }
+
+        const deleteSql = "DELETE FROM pest_reports WHERE id = ?";
+
+        db.query(deleteSql, [reportId], (deleteErr, deleteResult) => {
+            if (deleteErr) {
+                console.error("Delete report error:", deleteErr);
+                return res.status(500).json({ error: "Failed to delete report." });
+            }
+
+            if (deleteResult.affectedRows === 0) {
+                return res.status(404).json({ error: "Report not found." });
+            }
+
+            res.json({ message: "Report deleted successfully." });
+        });
+    });
+});
+
 module.exports = router;

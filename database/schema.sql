@@ -35,3 +35,10 @@ ALTER TABLE pest_reports
     ADD COLUMN pest_type VARCHAR(100) NULL,
     ADD COLUMN status_choice VARCHAR(50) NULL,
     ADD COLUMN notifiable_choice VARCHAR(50) NULL;
+
+ALTER TABLE users
+    ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user';
+
+UPDATE users
+SET role = 'admin'
+WHERE email = 'test@qq.com';
