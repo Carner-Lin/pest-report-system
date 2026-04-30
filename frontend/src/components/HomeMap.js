@@ -1,7 +1,25 @@
-import { useEffect } from "react";
-import { Map, Marker, InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { useEffect, useState } from "react";
+import {
+    Map,
+    useMap,
+    AdvancedMarker,
+} from "@vis.gl/react-google-maps";
+
+import insectIcon from "../assets/markers/insect.svg";
+import mammalIcon from "../assets/markers/mammal.svg";
+import plantIcon from "../assets/markers/plant.svg";
+import birdIcon from "../assets/markers/bird.svg";
+import spiderIcon from "../assets/markers/spider.svg";
+import otherIcon from "../assets/markers/other.svg";
 
 const DEFAULT_CENTER = { lat: -37.787, lng: 175.279 };
+
+const DEFAULT_LANDMARK = {
+    position: { lat: -37.787, lng: 175.279 },
+    title: "Default Landmark",
+    description: "This is a fixed landmark on the map.",
+    icon: otherIcon,
+};
 
 function MapController({ focusReport }) {
     const map = useMap();
@@ -28,12 +46,31 @@ function MapController({ focusReport }) {
     return null;
 }
 
+function getMarkerIconByType(report) {
+    const pestType = (report.pest_type || report.organism_type || "").toLowerCase();
+
+    if (pestType.includes("insect")) return insectIcon;
+    if (pestType.includes("mammal")) return mammalIcon;
+    if (pestType.includes("plant")) return plantIcon;
+    if (pestType.includes("bird")) return birdIcon;
+    if (pestType.includes("spider")) return spiderIcon;
+
+    return otherIcon;
+}
+
+function getDisplayPestName(report) {
+    return report.pest_name || report.custom_pest_name || "Unknown Pest";
+}
+
 export default function HomeMap({
                                     reports,
                                     selectedReport,
                                     setSelectedReport,
                                     focusReport,
+                                    onViewDetail,
                                 }) {
+    const [showLandmarkDetail, setShowLandmarkDetail] = useState(false);
+
     const validReports = reports.filter(
         (report) => report.latitude != null && report.longitude != null
     );
@@ -51,42 +88,169 @@ export default function HomeMap({
                 defaultZoom={11}
                 gestureHandling="greedy"
                 style={{ width: "100%", height: "600px" }}
+                mapId="5fa018df7a7cece3bb08d70f"
             >
                 <MapController focusReport={focusReport} />
 
                 {validReports.map((report) => (
-                    <Marker
+                    <AdvancedMarker
                         key={report.id}
                         position={{
                             lat: Number(report.latitude),
                             lng: Number(report.longitude),
                         }}
                         onClick={() => setSelectedReport(report)}
-                    />
+                        anchorLeft="-50%"
+                        anchorTop="-34px"
+                        zIndex={10}
+                    >
+                        <div className="custom-landmark-marker" title="Click to view details">
+                            <div className="custom-landmark-circle">
+                                <img
+                                    src={getMarkerIconByType(report)}
+                                    alt="Pest icon"
+                                    className="custom-landmark-inner-icon"
+                                />
+                            </div>
+                            <div className="custom-landmark-pointer"></div>
+                        </div>
+                    </AdvancedMarker>
                 ))}
+
+                <AdvancedMarker
+                    position={DEFAULT_LANDMARK.position}
+                    onClick={() => setShowLandmarkDetail(true)}
+                    anchorLeft="-50%"
+                    anchorTop="-34px"
+                    zIndex={5}
+                >
+                    <div className="custom-landmark-marker" title="Click to view details">
+                        <div className="custom-landmark-circle">
+                            <img
+                                src={DEFAULT_LANDMARK.icon}
+                                alt="Landmark icon"
+                                className="custom-landmark-inner-icon"
+                            />
+                        </div>
+                        <div className="custom-landmark-pointer"></div>
+                    </div>
+                </AdvancedMarker>
+
+                {showLandmarkDetail && (
+                    <AdvancedMarker
+                        position={DEFAULT_LANDMARK.position}
+                        anchorLeft="-50%"
+                        anchorTop="-118px"
+                        zIndex={1000}
+                    >
+                        <div className="custom-map-popup">
+                            <button
+                                type="button"
+                                className="custom-map-popup-close"
+                                onClick={() => setShowLandmarkDetail(false)}
+                            >
+                                ×
+                            </button>
+
+                            <div className="custom-map-popup-top">
+                                <div className="map-info-icon-box">
+                                    <img
+                                        src={DEFAULT_LANDMARK.icon}
+                                        alt="Landmark icon"
+                                        className="map-info-icon"
+                                    />
+                                </div>
+
+                                <div className="map-info-text">
+                                    <strong>{DEFAULT_LANDMARK.title}</strong>
+                                    <p>{DEFAULT_LANDMARK.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </AdvancedMarker>
+                )}
 
                 {selectedReport &&
                     selectedReport.latitude != null &&
                     selectedReport.longitude != null && (
-                        <InfoWindow
+                        <AdvancedMarker
                             position={{
                                 lat: Number(selectedReport.latitude),
                                 lng: Number(selectedReport.longitude),
                             }}
-                            onCloseClick={() => setSelectedReport(null)}
+                            anchorLeft="-50%"
+                            anchorTop="-120px"
+                            zIndex={1000}
                         >
-                            <div>
-                                <strong>
-                                    {selectedReport.pest_name ||
-                                        selectedReport.custom_pest_name ||
-                                        "Unknown pest"}
-                                </strong>
-                                <p>{selectedReport.location_name || "No location name"}</p>
-                                <p>{selectedReport.description || "No description"}</p>
+                            <div className="custom-map-popup">
+                                <button
+                                    type="button"
+                                    className="custom-map-popup-close"
+                                    onClick={() => setSelectedReport(null)}
+                                >
+                                    ×
+                                </button>
+
+                                <div className="custom-map-popup-top">
+                                    <div className="map-info-icon-box">
+                                        <img
+                                            src={getMarkerIconByType(selectedReport)}
+                                            alt="Pest icon"
+                                            className="map-info-icon"
+                                        />
+                                    </div>
+
+                                    <div className="map-info-text">
+                                        <strong>{getDisplayPestName(selectedReport)}</strong>
+                                        <p>{selectedReport.location_name || "No location name"}</p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="map-detail-btn"
+                                    onClick={() => onViewDetail && onViewDetail(selectedReport)}
+                                >
+                                    View Report Detail
+                                </button>
                             </div>
-                        </InfoWindow>
+                        </AdvancedMarker>
                     )}
             </Map>
+
+            <div className="map-legend">
+                <h4>Legend</h4>
+
+                <div className="legend-item">
+                    <img src={insectIcon} alt="Insect icon" />
+                    <span>Insect</span>
+                </div>
+
+                <div className="legend-item">
+                    <img src={mammalIcon} alt="Mammal icon" />
+                    <span>Mammal</span>
+                </div>
+
+                <div className="legend-item">
+                    <img src={plantIcon} alt="Plant icon" />
+                    <span>Plant</span>
+                </div>
+
+                <div className="legend-item">
+                    <img src={birdIcon} alt="Bird icon" />
+                    <span>Bird</span>
+                </div>
+
+                <div className="legend-item">
+                    <img src={spiderIcon} alt="Spider icon" />
+                    <span>Spider</span>
+                </div>
+
+                <div className="legend-item">
+                    <img src={otherIcon} alt="Other icon" />
+                    <span>Other</span>
+                </div>
+            </div>
         </div>
     );
 }

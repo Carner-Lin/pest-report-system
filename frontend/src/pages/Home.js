@@ -117,6 +117,7 @@ function Home() {
                 selectedReport={selectedReport}
                 setSelectedReport={setSelectedReport}
                 focusReport={mapFocusReport}
+                onViewDetail={(report) => setDetailReport(report)}
             />
 
             {showForm && (
