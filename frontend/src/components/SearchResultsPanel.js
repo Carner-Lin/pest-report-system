@@ -35,21 +35,33 @@ export default function SearchResultsPanel({
                                                reports,
                                                expanded,
                                                onToggle,
+                                               onClose,
                                                onFocusMap,
                                                onViewDetail,
                                            }) {
     return (
         <section className="home-search-results-section">
-            <button
-                type="button"
-                className="results-toggle-btn"
-                onClick={onToggle}
-                aria-expanded={expanded}
-            >
-        <span className={`results-toggle-icon ${expanded ? "expanded" : ""}`}>
-          ▾
-        </span>
-            </button>
+            <div className="results-controls">
+                <button
+                    type="button"
+                    className="results-toggle-btn"
+                    onClick={onToggle}
+                    aria-expanded={expanded}
+                >
+                    <span className={`results-toggle-icon ${expanded ? "expanded" : ""}`}>
+                        ▾
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    className="results-close-btn"
+                    onClick={onClose}
+                    aria-label="Close search results"
+                >
+                    ×
+                </button>
+            </div>
 
             <div
                 className={`home-search-results-collapse ${

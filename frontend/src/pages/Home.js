@@ -105,6 +105,10 @@ function Home() {
                     reports={filteredReports}
                     expanded={showSearchResults}
                     onToggle={() => setShowSearchResults((prev) => !prev)}
+                    onClose={() => {
+                        setSubmittedSearch("");
+                        setShowSearchResults(false);
+                    }}
                     onFocusMap={handleFocusMap}
                     onViewDetail={(report) => setDetailReport(report)}
                 />

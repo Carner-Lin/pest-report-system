@@ -190,18 +190,29 @@ button {
   margin-bottom: 18px;
 }
 
-.results-toggle-btn {
+.results-toggle-btn,
+.results-close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 34px;
   height: 34px;
+  padding: 0;
   border: none;
   border-radius: 6px;
   background: rgba(7, 67, 37, 0.93);
   color: white;
-  font-size: 20px;
-  margin-bottom: 10px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.results-toggle-btn {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+
+.results-close-btn {
+  font-size: 22px;
 }
 
 .results-toggle-icon {
@@ -273,6 +284,13 @@ button {
   justify-content: space-between;
   gap: 10px;
   margin-top: 14px;
+}
+
+.results-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .view-detail-btn,
