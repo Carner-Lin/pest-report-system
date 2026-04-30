@@ -577,7 +577,7 @@ button {
 
 .report-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
   gap: 20px;
   margin-top: 20px;
 }
@@ -585,7 +585,7 @@ button {
 .report-summary-card {
   width: 100%;
   text-align: left;
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgba(7, 67, 37, 0.93);
   border-radius: 12px;
   padding: 16px;
   background: white;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
     Map,
     useMap,
@@ -13,13 +13,6 @@ import spiderIcon from "../assets/markers/spider.svg";
 import otherIcon from "../assets/markers/other.svg";
 
 const DEFAULT_CENTER = { lat: -37.787, lng: 175.279 };
-
-const DEFAULT_LANDMARK = {
-    position: { lat: -37.787, lng: 175.279 },
-    title: "Default Landmark",
-    description: "This is a fixed landmark on the map.",
-    icon: otherIcon,
-};
 
 function MapController({ focusReport }) {
     const map = useMap();
@@ -69,8 +62,6 @@ export default function HomeMap({
                                     focusReport,
                                     onViewDetail,
                                 }) {
-    const [showLandmarkDetail, setShowLandmarkDetail] = useState(false);
-
     const validReports = reports.filter(
         (report) => report.latitude != null && report.longitude != null
     );
@@ -116,59 +107,6 @@ export default function HomeMap({
                         </div>
                     </AdvancedMarker>
                 ))}
-
-                <AdvancedMarker
-                    position={DEFAULT_LANDMARK.position}
-                    onClick={() => setShowLandmarkDetail(true)}
-                    anchorLeft="-50%"
-                    anchorTop="-34px"
-                    zIndex={5}
-                >
-                    <div className="custom-landmark-marker" title="Click to view details">
-                        <div className="custom-landmark-circle">
-                            <img
-                                src={DEFAULT_LANDMARK.icon}
-                                alt="Landmark icon"
-                                className="custom-landmark-inner-icon"
-                            />
-                        </div>
-                        <div className="custom-landmark-pointer"></div>
-                    </div>
-                </AdvancedMarker>
-
-                {showLandmarkDetail && (
-                    <AdvancedMarker
-                        position={DEFAULT_LANDMARK.position}
-                        anchorLeft="-50%"
-                        anchorTop="-118px"
-                        zIndex={1000}
-                    >
-                        <div className="custom-map-popup">
-                            <button
-                                type="button"
-                                className="custom-map-popup-close"
-                                onClick={() => setShowLandmarkDetail(false)}
-                            >
-                                ×
-                            </button>
-
-                            <div className="custom-map-popup-top">
-                                <div className="map-info-icon-box">
-                                    <img
-                                        src={DEFAULT_LANDMARK.icon}
-                                        alt="Landmark icon"
-                                        className="map-info-icon"
-                                    />
-                                </div>
-
-                                <div className="map-info-text">
-                                    <strong>{DEFAULT_LANDMARK.title}</strong>
-                                    <p>{DEFAULT_LANDMARK.description}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </AdvancedMarker>
-                )}
 
                 {selectedReport &&
                     selectedReport.latitude != null &&

@@ -155,7 +155,7 @@ export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }
                                     defaultCenter={validSelectedLocation}
                                     defaultZoom={13}
                                     gestureHandling="greedy"
-                                    style={{ width: "100%", height: "380px" }}
+                                    style={{ width: "100%", height: "330px" }}
                                 >
                                     <Marker position={validSelectedLocation} />
                                 </Map>
