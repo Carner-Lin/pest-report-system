@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "@vis.gl/react-google-maps";
 
 function getDisplayPestName(report) {
@@ -19,7 +19,15 @@ function getDisplayDate(report) {
     });
 }
 
-export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }) {
+export default function ReportDetailModal({
+                                              report,
+                                              onClose,
+                                              isAdmin = false,
+                                              onDelete,
+                                          }) {
+    const [isNoted, setIsNoted] = useState(false);
+    const [noteLoading, setNoteLoading] = useState(false);
+
     useEffect(() => {
         document.body.style.overflow = "hidden";
 
@@ -38,6 +46,29 @@ export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }
             lng: Number(report.longitude),
         };
     }, [report]);
+
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+
+    useEffect(() => {
+        if (!currentUser?.id || !report?.id) {
+            setIsNoted(false);
+            return;
+        }
+
+        fetch(`http://localhost:5000/api/reports/noted/${currentUser.id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                const alreadyNoted = Array.isArray(data)
+                    ? data.some((item) => Number(item.id) === Number(report.id))
+                    : false;
+
+                setIsNoted(alreadyNoted);
+            })
+            .catch((err) => {
+                console.error("Error checking noted reports:", err);
+                setIsNoted(false);
+            });
+    }, [currentUser, report]);
 
     if (!report) return null;
 
@@ -59,6 +90,64 @@ export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }
                 ? "No"
                 : "Unknown");
 
+    const handleToggleNote = async () => {
+        if (!currentUser?.id) {
+            alert("Please login first.");
+            return;
+        }
+
+        setNoteLoading(true);
+
+        try {
+            if (!isNoted) {
+                const res = await fetch(
+                    `http://localhost:5000/api/reports/${report.id}/note`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            userId: currentUser.id,
+                        }),
+                    }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || "Failed to note report.");
+                    setNoteLoading(false);
+                    return;
+                }
+
+                setIsNoted(true);
+            } else {
+                const res = await fetch(
+                    `http://localhost:5000/api/reports/${report.id}/note/${currentUser.id}`,
+                    {
+                        method: "DELETE",
+                    }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || "Failed to remove noted report.");
+                    setNoteLoading(false);
+                    return;
+                }
+
+                setIsNoted(false);
+            }
+        } catch (error) {
+            console.error("Toggle note error:", error);
+            alert("Server error.");
+        } finally {
+            setNoteLoading(false);
+        }
+    };
+
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div
@@ -75,9 +164,24 @@ export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }
                 <div className="report-detail-body">
                     <div className="report-detail-top">
                         <div className="report-detail-left">
-                            <h3 className="report-detail-pest-title">
-                                {getDisplayPestName(report)}
-                            </h3>
+                            <div className="report-title-row">
+                                <h3 className="report-detail-pest-title">
+                                    {getDisplayPestName(report)}
+                                </h3>
+
+                                <button
+                                    type="button"
+                                    className={`report-note-btn compact-note-btn ${isNoted ? "noted" : ""}`}
+                                    onClick={handleToggleNote}
+                                    disabled={noteLoading}
+                                >
+                                    {noteLoading
+                                        ? "Loading..."
+                                        : isNoted
+                                            ? "Remove Note"
+                                            : "Noted"}
+                                </button>
+                            </div>
 
                             <div className="report-meta-row">
                                 <p>
@@ -155,7 +259,7 @@ export default function ReportDetailModal({ report, onClose, isAdmin, onDelete }
                                     defaultCenter={validSelectedLocation}
                                     defaultZoom={13}
                                     gestureHandling="greedy"
-                                    style={{ width: "100%", height: "330px" }}
+                                    style={{ width: "100%", height: "260px" }}
                                 >
                                     <Marker position={validSelectedLocation} />
                                 </Map>
