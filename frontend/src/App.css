@@ -798,6 +798,52 @@ button {
   border-radius: 12px;
 }
 
+.submit-image-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ai-identify-btn {
+  padding: 8px 12px;
+  background: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.ai-identify-btn:hover {
+  background: #1c4e1e;
+}
+
+.ai-identify-btn:disabled {
+  background: #7f9a87;
+  cursor: not-allowed;
+}
+
+.ai-result-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(7, 67, 37, 0.2);
+  border-radius: 8px;
+  background: rgba(7, 67, 37, 0.04);
+}
+
+.ai-result-box p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #333;
+}
+
+.ai-result-note {
+  color: #666;
+  font-style: italic;
+}
+
 /* Submit Report Modal */
 .submit-report-modal {
   position: relative;
@@ -1226,6 +1272,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 .profile-avatar-image {

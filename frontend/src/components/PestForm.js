@@ -6,6 +6,9 @@ function PestForm({ onSuccess }) {
     const [message, setMessage] = useState("");
     const [imagePreview, setImagePreview] = useState("");
     const [locationMessage, setLocationMessage] = useState("");
+    const [selectedImageFile, setSelectedImageFile] = useState(null);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiResult, setAiResult] = useState(null);
 
     const [formData, setFormData] = useState({
         user_id: null,
@@ -188,6 +191,8 @@ function PestForm({ onSuccess }) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setSelectedImageFile(file);
+
         const previewUrl = URL.createObjectURL(file);
         setImagePreview(previewUrl);
 
@@ -195,6 +200,50 @@ function PestForm({ onSuccess }) {
             ...prev,
             image_url: ""
         }));
+
+        setAiResult(null);
+    };
+
+    const handleIdentifyPest = async () => {
+        if (!selectedImageFile) {
+            alert("Please upload an image first.");
+            return;
+        }
+
+        setAiLoading(true);
+        setAiResult(null);
+
+        try {
+            const dataToSend = new FormData();
+            dataToSend.append("image", selectedImageFile);
+
+            const res = await fetch("http://localhost:5000/api/ai/identify-pest", {
+                method: "POST",
+                body: dataToSend
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || "Failed to identify pest.");
+                setAiLoading(false);
+                return;
+            }
+
+            setAiResult(data);
+
+            setFormData((prev) => ({
+                ...prev,
+                custom_pest_name: data.predicted_name || prev.custom_pest_name,
+                pest_type: data.predicted_type || prev.pest_type,
+                description: data.description || prev.description
+            }));
+        } catch (error) {
+            console.error("AI identify error:", error);
+            alert("Server error.");
+        } finally {
+            setAiLoading(false);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -250,6 +299,8 @@ function PestForm({ onSuccess }) {
                 });
 
                 setImagePreview("");
+                setSelectedImageFile(null);
+                setAiResult(null);
                 setLocationMessage("");
 
                 if (onSuccess) {
@@ -314,10 +365,10 @@ function PestForm({ onSuccess }) {
                                 value={formData.status_choice}
                                 onChange={handleChange}
                             >
+                                <option value="Uncertain">Uncertain</option>
                                 <option value="Regulated">Regulated</option>
                                 <option value="Non-regulated">Non-regulated</option>
                                 <option value="Not assessed">Not assessed</option>
-                                <option value="Uncertain">Uncertain</option>
                             </select>
                         </div>
 
@@ -328,20 +379,20 @@ function PestForm({ onSuccess }) {
                                 value={formData.notifiable_choice}
                                 onChange={handleChange}
                             >
+                                <option value="Uncertain">Uncertain</option>
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
-                                <option value="Uncertain">Uncertain</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="submit-form-field">
-                        <label>Detailed description</label>
+                        <label>Description</label>
                         <textarea
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
-                            placeholder="Describe what you found"
+                            placeholder="Enter pest description"
                         />
                     </div>
 
@@ -353,7 +404,7 @@ function PestForm({ onSuccess }) {
                                 name="location_name"
                                 value={formData.location_name}
                                 onChange={handleChange}
-                                placeholder="Enter address or use map selection"
+                                placeholder="Enter or select a location"
                             />
                             <button
                                 type="button"
@@ -371,7 +422,17 @@ function PestForm({ onSuccess }) {
 
                 <div className="submit-report-right">
                     <div className="submit-image-box">
-                        <label className="submit-image-label">Upload pest image</label>
+                        <div className="submit-image-header">
+                            <label className="submit-image-label">Upload pest image</label>
+                            <button
+                                type="button"
+                                className="ai-identify-btn"
+                                onClick={handleIdentifyPest}
+                                disabled={aiLoading}
+                            >
+                                {aiLoading ? "Identifying..." : "Identify with AI"}
+                            </button>
+                        </div>
 
                         <input
                             type="file"
@@ -384,7 +445,7 @@ function PestForm({ onSuccess }) {
                             {imagePreview ? (
                                 <img
                                     src={imagePreview}
-                                    alt="Pest preview"
+                                    alt="Preview"
                                     className="submit-image-preview"
                                 />
                             ) : (
@@ -393,13 +454,23 @@ function PestForm({ onSuccess }) {
                                 </div>
                             )}
                         </div>
+
+                        {aiResult && (
+                            <div className="ai-result-box">
+                                <p><strong>AI Predicted Name:</strong> {aiResult.predicted_name}</p>
+                                <p><strong>Type:</strong> {aiResult.predicted_type}</p>
+                                <p><strong>Confidence:</strong> {Math.round((aiResult.confidence || 0) * 100)}%</p>
+                                <p className="ai-result-note">
+                                    AI suggestion only. Please verify before submitting.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
             <div className="submit-report-map-section">
-                <h4>Select location on the map</h4>
-
+                <h4>Select report location</h4>
                 <LocationPickerMap
                     selectedLocation={
                         formData.latitude && formData.longitude
@@ -411,13 +482,6 @@ function PestForm({ onSuccess }) {
                     }
                     onSelectLocation={handleLocationSelect}
                 />
-
-                {formData.latitude && formData.longitude && (
-                    <p className="selected-coordinates-text">
-                        Selected coordinates: {Number(formData.latitude).toFixed(6)},{" "}
-                        {Number(formData.longitude).toFixed(6)}
-                    </p>
-                )}
             </div>
 
             <button type="submit" className="submit-report-btn">
