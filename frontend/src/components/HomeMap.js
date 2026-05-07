@@ -117,7 +117,7 @@ export default function HomeMap({
                                 lng: Number(selectedReport.longitude),
                             }}
                             anchorLeft="-50%"
-                            anchorTop="-120px"
+                            anchorTop="-118px"
                             zIndex={1000}
                         >
                             <div className="custom-map-popup">
