@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ReportDetailModal from "../components/ReportDetailModal";
 import defaultAvatar from "../assets/default-avatar.png";
 
 function getDisplayPestName(report) {
@@ -22,6 +23,7 @@ function Profile() {
     const [notedReports, setNotedReports] = useState([]);
     const [loadingMyReports, setLoadingMyReports] = useState(true);
     const [loadingNotedReports, setLoadingNotedReports] = useState(true);
+    const [selectedReport, setSelectedReport] = useState(null);
 
     useEffect(() => {
         if (!currentUser?.id) return;
@@ -48,6 +50,90 @@ function Profile() {
                 setLoadingNotedReports(false);
             });
     }, [currentUser]);
+
+    const handleDeleteReport = async (reportId) => {
+        if (!currentUser?.id) {
+            alert("Please login first.");
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this report?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/reports/${reportId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    currentUserId: currentUser.id,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || "Failed to delete report.");
+                return;
+            }
+
+            setMyReports((prev) => prev.filter((report) => report.id !== reportId));
+            setNotedReports((prev) => prev.filter((report) => report.id !== reportId));
+
+            if (selectedReport?.id === reportId) {
+                setSelectedReport(null);
+            }
+
+            alert("Report deleted successfully.");
+        } catch (error) {
+            console.error("Delete report error:", error);
+            alert("Server error.");
+        }
+    };
+
+    const handleRemoveNote = async (reportId) => {
+        if (!currentUser?.id) {
+            alert("Please login first.");
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Are you sure you want to remove this noted report?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const res = await fetch(
+                `http://localhost:5000/api/reports/${reportId}/note/${currentUser.id}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || "Failed to remove note.");
+                return;
+            }
+
+            setNotedReports((prev) => prev.filter((report) => report.id !== reportId));
+
+            if (selectedReport?.id === reportId) {
+                setSelectedReport(null);
+            }
+
+            alert("Note removed successfully.");
+        } catch (error) {
+            console.error("Remove note error:", error);
+            alert("Server error.");
+        }
+    };
 
     if (!currentUser) {
         return (
@@ -99,9 +185,31 @@ function Profile() {
                                 <div className="profile-report-list">
                                     {myReports.map((report) => (
                                         <div key={report.id} className="profile-report-card">
-                                            <h4>{getDisplayPestName(report)}</h4>
-                                            <p><strong>Date:</strong> {getDisplayDate(report)}</p>
-                                            <p><strong>Location:</strong> {report.location_name || "Unknown location"}</p>
+                                            <div
+                                                className="profile-report-card-content"
+                                            >
+                                                <h4>{getDisplayPestName(report)}</h4>
+                                                <p><strong>Date:</strong> {getDisplayDate(report)}</p>
+                                                <p><strong>Location:</strong> {report.location_name || "Unknown location"}</p>
+                                            </div>
+
+                                            <div className="profile-report-card-actions">
+                                                <button
+                                                    type="button"
+                                                    className="profile-open-btn"
+                                                    onClick={() => setSelectedReport(report)}
+                                                >
+                                                    View Detail
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="profile-delete-btn"
+                                                    onClick={() => handleDeleteReport(report.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -123,9 +231,31 @@ function Profile() {
                                 <div className="profile-report-list">
                                     {notedReports.map((report) => (
                                         <div key={report.id} className="profile-report-card">
-                                            <h4>{getDisplayPestName(report)}</h4>
-                                            <p><strong>Date:</strong> {getDisplayDate(report)}</p>
-                                            <p><strong>Location:</strong> {report.location_name || "Unknown location"}</p>
+                                            <div
+                                                className="profile-report-card-content"
+                                            >
+                                                <h4>{getDisplayPestName(report)}</h4>
+                                                <p><strong>Date:</strong> {getDisplayDate(report)}</p>
+                                                <p><strong>Location:</strong> {report.location_name || "Unknown location"}</p>
+                                            </div>
+
+                                            <div className="profile-report-card-actions">
+                                                <button
+                                                    type="button"
+                                                    className="profile-open-btn"
+                                                    onClick={() => setSelectedReport(report)}
+                                                >
+                                                    View Detail
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="profile-remove-note-btn"
+                                                    onClick={() => handleRemoveNote(report.id)}
+                                                >
+                                                    Remove Note
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -134,6 +264,15 @@ function Profile() {
                     </div>
                 </div>
             </div>
+
+            {selectedReport && (
+                <ReportDetailModal
+                    report={selectedReport}
+                    onClose={() => setSelectedReport(null)}
+                    isAdmin={currentUser?.role === "admin"}
+                    onDelete={handleDeleteReport}
+                />
+            )}
         </main>
     );
 }
