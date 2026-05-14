@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function PestEncyclopedia() {
     const [pests, setPests] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/pests")
+        fetch(`${API_BASE_URL}/api/pests`)
             .then((res) => res.json())
             .then((data) => {
                 setPests(data);

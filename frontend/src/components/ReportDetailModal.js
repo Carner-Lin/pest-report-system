@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "@vis.gl/react-google-maps";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function getDisplayPestName(report) {
     return report.pest_name || report.custom_pest_name || "Unknown Pest";
@@ -55,7 +56,7 @@ export default function ReportDetailModal({
             return;
         }
 
-        fetch(`http://localhost:5000/api/reports/noted/${currentUser.id}`)
+        fetch(`${API_BASE_URL}/api/reports/noted/${currentUser.id}`)
             .then((res) => res.json())
             .then((data) => {
                 const alreadyNoted = Array.isArray(data)
@@ -101,7 +102,7 @@ export default function ReportDetailModal({
         try {
             if (!isNoted) {
                 const res = await fetch(
-                    `http://localhost:5000/api/reports/${report.id}/note`,
+                    `${API_BASE_URL}/api/reports/${report.id}/note`,
                     {
                         method: "POST",
                         headers: {
@@ -124,7 +125,7 @@ export default function ReportDetailModal({
                 setIsNoted(true);
             } else {
                 const res = await fetch(
-                    `http://localhost:5000/api/reports/${report.id}/note/${currentUser.id}`,
+                    `${API_BASE_URL}/api/reports/${report.id}/note/${currentUser.id}`,
                     {
                         method: "DELETE",
                     }

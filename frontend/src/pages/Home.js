@@ -5,6 +5,7 @@ import SearchResultsPanel from "../components/SearchResultsPanel";
 import ReportDetailModal from "../components/ReportDetailModal";
 import HomeMap from "../components/HomeMap";
 import defaultReportImage from "../assets/default-report.png";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function getDisplayPestName(report) {
     return report.pest_name || report.custom_pest_name || "Unknown Pest";
@@ -55,7 +56,7 @@ function Home() {
     const navigate = useNavigate();
 
     const fetchReports = () => {
-        fetch("http://localhost:5000/api/reports")
+        fetch(`${API_BASE_URL}/api/reports`)
             .then((res) => res.json())
             .then((data) => setReports(data))
             .catch((err) => console.error("Error fetching reports:", err));

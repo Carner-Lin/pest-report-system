@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ function Login() {
         setSuccess(false);
 
         try {
-            const res = await fetch("http://localhost:5000/api/users/login", {
+            const res = await fetch(`${API_BASE_URL}/api/users/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

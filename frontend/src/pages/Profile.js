@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReportDetailModal from "../components/ReportDetailModal";
 import defaultAvatar from "../assets/default-avatar.png";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function getDisplayPestName(report) {
     return report.pest_name || report.custom_pest_name || "Unknown Pest";
@@ -28,7 +29,7 @@ function Profile() {
     useEffect(() => {
         if (!currentUser?.id) return;
 
-        fetch(`http://localhost:5000/api/reports/user/${currentUser.id}`)
+        fetch(`${API_BASE_URL}/api/reports/user/${currentUser.id}`)
             .then((res) => res.json())
             .then((data) => {
                 setMyReports(data);
@@ -39,7 +40,7 @@ function Profile() {
                 setLoadingMyReports(false);
             });
 
-        fetch(`http://localhost:5000/api/reports/noted/${currentUser.id}`)
+        fetch(`${API_BASE_URL}/api/reports/noted/${currentUser.id}`)
             .then((res) => res.json())
             .then((data) => {
                 setNotedReports(data);
@@ -64,7 +65,7 @@ function Profile() {
         if (!confirmed) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/reports/${reportId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -109,7 +110,7 @@ function Profile() {
 
         try {
             const res = await fetch(
-                `http://localhost:5000/api/reports/${reportId}/note/${currentUser.id}`,
+                `${API_BASE_URL}/api/reports/${reportId}/note/${currentUser.id}`,
                 {
                     method: "DELETE",
                 }

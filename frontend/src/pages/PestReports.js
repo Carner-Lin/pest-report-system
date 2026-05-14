@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ReportDetailModal from "../components/ReportDetailModal";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function getDisplayPestName(report) {
     return report.pest_name || report.custom_pest_name || "Unknown Pest";
@@ -43,7 +44,7 @@ function PestReports() {
     const isAdmin = currentUser?.role === "admin";
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/reports")
+        fetch(`${API_BASE_URL}/api/reports`)
             .then((res) => res.json())
             .then((data) => {
                 setReports(data);
@@ -68,7 +69,7 @@ function PestReports() {
         if (!confirmed) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/reports/${reportId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

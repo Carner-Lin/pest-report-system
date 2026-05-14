@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import LocationPickerMap from "./LocationPickerMap";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function PestForm({ onSuccess }) {
     const [pests, setPests] = useState([]);
@@ -34,7 +35,7 @@ function PestForm({ onSuccess }) {
             }));
         }
 
-        fetch("http://localhost:5000/api/pests")
+        fetch(`${API_BASE_URL}/api/pests`)
             .then((res) => res.json())
             .then((data) => setPests(data))
             .catch((err) => console.error("Error fetching pests:", err));
@@ -217,7 +218,7 @@ function PestForm({ onSuccess }) {
             const dataToSend = new FormData();
             dataToSend.append("image", selectedImageFile);
 
-            const res = await fetch("http://localhost:5000/api/ai/identify-pest", {
+            const res = await fetch(`${API_BASE_URL}/api/ai/identify-pest`, {
                 method: "POST",
                 body: dataToSend
             });
@@ -273,7 +274,7 @@ function PestForm({ onSuccess }) {
             notifiable_choice: formData.notifiable_choice
         };
 
-        fetch("http://localhost:5000/api/reports", {
+        fetch(`${API_BASE_URL}/api/reports`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
