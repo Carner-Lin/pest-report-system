@@ -1,9 +1,43 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PestForm from "../components/PestForm";
 import SearchResultsPanel from "../components/SearchResultsPanel";
 import ReportDetailModal from "../components/ReportDetailModal";
 import HomeMap from "../components/HomeMap";
+import defaultReportImage from "../assets/default-report.png";
+
+function getDisplayPestName(report) {
+    return report.pest_name || report.custom_pest_name || "Unknown Pest";
+}
+
+function getDisplayUsername(report) {
+    return report.username || "Anonymous User";
+}
+
+function getDisplayDate(report) {
+    if (!report.report_date) return "Unknown date";
+
+    return new Date(report.report_date).toLocaleDateString("en-NZ", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+}
+
+function getCityLevelLocation(locationName) {
+    if (!locationName) return "Unknown area";
+
+    const parts = locationName
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+    if (parts.length >= 2) {
+        return parts[parts.length - 2];
+    }
+
+    return locationName;
+}
 
 function Home() {
     const [showForm, setShowForm] = useState(false);
@@ -17,6 +51,8 @@ function Home() {
     const [showSearchResults, setShowSearchResults] = useState(true);
 
     const [detailReport, setDetailReport] = useState(null);
+
+    const navigate = useNavigate();
 
     const fetchReports = () => {
         fetch("http://localhost:5000/api/reports")
@@ -44,6 +80,10 @@ function Home() {
             return pestName.includes(keyword);
         });
     }, [reports, submittedSearch]);
+
+    const recentReports = useMemo(() => {
+        return [...reports].slice(0, 3);
+    }, [reports]);
 
     const handleSearchSubmit = () => {
         const keyword = searchText.trim();
@@ -116,13 +156,92 @@ function Home() {
 
             <h2>Recent Pest Reports Map</h2>
 
-            <HomeMap
-                reports={reports}
-                selectedReport={selectedReport}
-                setSelectedReport={setSelectedReport}
-                focusReport={mapFocusReport}
-                onViewDetail={(report) => setDetailReport(report)}
-            />
+            <div className="home-main-layout">
+                <div className="home-map-main-column">
+                    <HomeMap
+                        reports={reports}
+                        selectedReport={selectedReport}
+                        setSelectedReport={setSelectedReport}
+                        focusReport={mapFocusReport}
+                        onViewDetail={(report) => setDetailReport(report)}
+                    />
+                </div>
+
+                <aside className="home-recent-sidebar">
+                    <div className="home-recent-sidebar-header">
+                        <h3>Recent Reports</h3>
+                    </div>
+
+                    <div className="home-recent-sidebar-body">
+                        {recentReports.length === 0 ? (
+                            <p className="home-recent-empty-text">
+                                No recent reports available.
+                            </p>
+                        ) : (
+                            <div className="home-recent-report-list">
+                                {recentReports.map((report) => (
+                                    <div
+                                        key={report.id}
+                                        className="home-recent-report-card"
+                                    >
+                                        <div className="home-recent-report-image-box">
+                                            <img
+                                                src={report.image_url || defaultReportImage}
+                                                alt={getDisplayPestName(report)}
+                                                className="home-recent-report-image"
+                                            />
+                                        </div>
+
+                                        <div className="home-recent-report-info">
+                                            <h4 className="home-recent-report-title">
+                                                {getDisplayPestName(report)}
+                                            </h4>
+
+                                            <p>
+                                                <strong>User:</strong> {getDisplayUsername(report)}
+                                            </p>
+
+                                            <p>
+                                                <strong>Date:</strong> {getDisplayDate(report)}
+                                            </p>
+
+                                            <p>
+                                                <strong>Area:</strong>{" "}
+                                                {getCityLevelLocation(report.location_name)}
+                                            </p>
+
+                                            <div className="home-recent-report-actions">
+                                                <button
+                                                    type="button"
+                                                    className="view-detail-btn"
+                                                    onClick={() => setDetailReport(report)}
+                                                >
+                                                    View Detail
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="focus-map-btn"
+                                                    onClick={() => handleFocusMap(report)}
+                                                >
+                                                    Show on Map
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div
+                        className="home-view-all-bar"
+                        onClick={() => navigate("/reports")}
+                    >
+                        View All Reports
+                    </div>
+                </aside>
+            </div>
 
             {showForm && (
                 <div className="modal-overlay" onClick={() => setShowForm(false)}>

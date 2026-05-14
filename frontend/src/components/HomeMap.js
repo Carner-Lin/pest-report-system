@@ -78,7 +78,7 @@ export default function HomeMap({
                 defaultCenter={DEFAULT_CENTER}
                 defaultZoom={15}
                 gestureHandling="greedy"
-                style={{ width: "100%", height: "600px" }}
+                style={{ width: "100%", height: "650px" }}
                 mapId="5fa018df7a7cece3bb08d70f"
             >
                 <MapController focusReport={focusReport} />

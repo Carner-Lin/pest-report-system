@@ -334,9 +334,10 @@ button {
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
-  margin-top: 20px;
+  margin-top: 0;
   border: 2px solid #18421a;
   overscroll-behavior: contain;
+  box-sizing: border-box;
 }
 
 .map-legend {
@@ -372,6 +373,128 @@ button {
   height: 18px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+.home-main-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.home-map-main-column {
+  min-width: 0;
+}
+
+.home-recent-sidebar {
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  height: 654px;
+  box-sizing: border-box;
+}
+
+.home-recent-sidebar-header {
+  background: rgba(7, 67, 37, 0.93);
+  padding: 10px 16px;
+}
+
+.home-recent-sidebar-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 18px;
+}
+
+.home-recent-sidebar-body {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+.home-recent-empty-text {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.home-recent-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.home-recent-report-card {
+  display: flex;
+  gap: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 12px;
+  background: white;
+}
+
+.home-recent-report-image-box {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f3f3f3;
+}
+
+.home-recent-report-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-recent-report-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-recent-report-title {
+  margin: 0 0 8px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.home-recent-report-info p {
+  margin: 5px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #333;
+}
+
+.home-recent-report-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.home-recent-report-actions .view-detail-btn,
+.home-recent-report-actions .focus-map-btn {
+  flex: 1;
+  padding: 7px 8px;
+  font-size: 12px;
+}
+
+.home-view-all-bar {
+  background: rgba(7, 67, 37, 0.93);
+  color: white;
+  text-align: center;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.home-view-all-bar:hover {
+  background: #1c4e1e;
 }
 
 /* Report marker */
@@ -1615,5 +1738,13 @@ button {
     top: 22px;
     width: 9px;
     height: 9px;
+  }
+
+  .home-main-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .home-recent-sidebar {
+    height: auto;
   }
 }
