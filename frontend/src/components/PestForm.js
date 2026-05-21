@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import LocationPickerMap from "./LocationPickerMap";
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function PestForm({ onSuccess }) {
@@ -304,6 +305,11 @@ function PestForm({ onSuccess }) {
                 setAiResult(null);
                 setLocationMessage("");
 
+                const fileInput = document.getElementById("pest-image-upload");
+                if (fileInput) {
+                    fileInput.value = "";
+                }
+
                 if (onSuccess) {
                     setTimeout(() => {
                         onSuccess();
@@ -435,12 +441,23 @@ function PestForm({ onSuccess }) {
                             </button>
                         </div>
 
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="submit-file-input"
-                        />
+                        <div className="custom-file-upload">
+                            <input
+                                id="pest-image-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="hidden-file-input"
+                            />
+
+                            <label htmlFor="pest-image-upload" className="custom-file-btn">
+                                Choose File
+                            </label>
+
+                            <span className="custom-file-name">
+                                {selectedImageFile ? selectedImageFile.name : "No file chosen"}
+                            </span>
+                        </div>
 
                         <div className="submit-image-preview-box">
                             {imagePreview ? (

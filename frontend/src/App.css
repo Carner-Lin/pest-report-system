@@ -929,6 +929,37 @@ button {
   margin-bottom: 8px;
 }
 
+.hidden-file-input {
+  display: none;
+}
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.custom-file-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 15px;
+  color: #000;
+}
+
+.custom-file-btn:hover {
+  background: #f3f3f3;
+}
+
+.custom-file-name {
+  font-size: 15px;
+  color: #333;
+}
+
 .ai-identify-btn {
   padding: 8px 12px;
   background: rgba(7, 67, 37, 0.93);
