@@ -1,11 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PestReports from "../pages/PestReports";
 
-jest.mock("../components/ReportDetailModal", () => ({ report, onClose, isAdmin, onDelete }) => (
+jest.mock("../components/ReportDetailModal", () => ({ report, onClose, canDelete, onDelete }) => (
     <div>
         <p>Mock Report Modal: {report?.custom_pest_name || report?.pest_name}</p>
         <button onClick={onClose}>Close Modal</button>
-        {isAdmin && <button onClick={() => onDelete(report.id)}>Delete From Modal</button>}
+        {canDelete && <button onClick={() => onDelete(report.id)}>Delete From Modal</button>}
     </div>
 ));
 
@@ -28,6 +28,7 @@ describe("PestReports", () => {
 
     test("shows loading then renders reports", async () => {
         fetch.mockResolvedValue({
+            ok: true,
             json: async () => reports,
         });
 
@@ -39,6 +40,7 @@ describe("PestReports", () => {
 
     test("shows empty message when no reports exist", async () => {
         fetch.mockResolvedValue({
+            ok: true,
             json: async () => [],
         });
 
@@ -49,6 +51,7 @@ describe("PestReports", () => {
 
     test("opens detail modal when a report card is clicked", async () => {
         fetch.mockResolvedValue({
+            ok: true,
             json: async () => reports,
         });
 
@@ -66,6 +69,7 @@ describe("PestReports", () => {
 
         fetch
             .mockResolvedValueOnce({
+                ok: true,
                 json: async () => reports,
             })
             .mockResolvedValueOnce({

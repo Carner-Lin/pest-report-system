@@ -1,11 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Profile from "../pages/Profile";
 
-jest.mock("../components/ReportDetailModal", () => ({ report, onClose, isAdmin, onDelete }) => (
+jest.mock("../components/ReportDetailModal", () => ({ report, onClose, canDelete, onDelete }) => (
     <div>
         <p>Mock Profile Modal: {report?.custom_pest_name || report?.pest_name}</p>
         <button onClick={onClose}>Close Modal</button>
-        {isAdmin && <button onClick={() => onDelete(report.id)}>Delete From Modal</button>}
+        {canDelete && <button onClick={() => onDelete(report.id)}>Delete From Modal</button>}
     </div>
 ));
 
@@ -37,6 +37,7 @@ describe("Profile", () => {
 
             if (urlStr.includes("/api/reports/user/1")) {
                 return {
+                    ok: true,
                     json: async () => [
                         {
                             id: 1,
@@ -50,6 +51,7 @@ describe("Profile", () => {
 
             if (urlStr.includes("/api/reports/noted/1")) {
                 return {
+                    ok: true,
                     json: async () => [
                         {
                             id: 2,
@@ -62,6 +64,7 @@ describe("Profile", () => {
             }
 
             return {
+                ok: true,
                 json: async () => [],
             };
         });
@@ -89,12 +92,14 @@ describe("Profile", () => {
 
             if (urlStr.includes("/api/reports/user/1")) {
                 return {
+                    ok: true,
                     json: async () => [],
                 };
             }
 
             if (urlStr.includes("/api/reports/noted/1") && (!options.method || options.method === "GET")) {
                 return {
+                    ok: true,
                     json: async () => [
                         {
                             id: 2,
@@ -144,6 +149,7 @@ describe("Profile", () => {
 
             if (urlStr.includes("/api/reports/user/1")) {
                 return {
+                    ok: true,
                     json: async () => [
                         {
                             id: 1,
@@ -157,6 +163,7 @@ describe("Profile", () => {
 
             if (urlStr.includes("/api/reports/noted/1")) {
                 return {
+                    ok: true,
                     json: async () => [],
                 };
             }

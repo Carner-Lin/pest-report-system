@@ -15,6 +15,7 @@ describe("PestEncyclopedia", () => {
 
     test("renders pest cards after fetch", async () => {
         fetch.mockResolvedValue({
+            ok: true,
             json: async () => [
                 {
                     id: 1,

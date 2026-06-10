@@ -56,10 +56,12 @@ describe("Home", () => {
         fetch.mockImplementation(async (url) => {
             if (String(url).includes("/api/reports")) {
                 return {
+                    ok: true,
                     json: async () => reports,
                 };
             }
             return {
+                ok: true,
                 json: async () => [],
             };
         });

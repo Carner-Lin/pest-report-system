@@ -164,7 +164,3 @@ VALUES
     ('Weasel', 'Mammal',
      'Weasels are small predatory mammals that prey on native birds, eggs, and insects.',
      'Not assessed', FALSE, 'https://www.doc.govt.nz/thumbs/gallery/link/f795d88189724a24adc18fdb58737794.aspx');
-
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE pests;
-SET FOREIGN_KEY_CHECKS = 1;

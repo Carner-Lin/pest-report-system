@@ -122,6 +122,6 @@ describe("Register", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "Register" }));
 
-        expect(await screen.findByText("Server error.")).toBeInTheDocument();
+        expect(await screen.findByText("network error")).toBeInTheDocument();
     });
 });

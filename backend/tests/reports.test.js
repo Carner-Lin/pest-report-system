@@ -165,23 +165,30 @@ describe("Reports API", () => {
         expect(res.body.error).toBe("Current user ID is required.");
     });
 
-    test("should reject delete report when user is not admin", async () => {
-        db.query.mockImplementation((sql, params, callback) => {
-            callback(null, [{ role: "user" }]);
-        });
+    test("should reject delete report when user is not admin or owner", async () => {
+        db.query
+            .mockImplementationOnce((sql, params, callback) => {
+                callback(null, [{ id: 1, role: "user" }]);
+            })
+            .mockImplementationOnce((sql, params, callback) => {
+                callback(null, [{ id: 10, user_id: 2 }]);
+            });
 
         const res = await request(app)
             .delete("/api/reports/10")
             .send({ currentUserId: 1 });
 
         expect(res.statusCode).toBe(403);
-        expect(res.body.error).toBe("Only admin can delete reports.");
+        expect(res.body.error).toBe("You can only delete your own reports.");
     });
 
     test("should delete report successfully when user is admin", async () => {
         db.query
             .mockImplementationOnce((sql, params, callback) => {
-                callback(null, [{ role: "admin" }]);
+                callback(null, [{ id: 1, role: "admin" }]);
+            })
+            .mockImplementationOnce((sql, params, callback) => {
+                callback(null, [{ id: 10, user_id: 2 }]);
             })
             .mockImplementationOnce((sql, params, callback) => {
                 callback(null, { affectedRows: 1 });
@@ -195,13 +202,33 @@ describe("Reports API", () => {
         expect(res.body.message).toBe("Report deleted successfully.");
     });
 
+    test("should delete report successfully when user is the owner", async () => {
+        db.query
+            .mockImplementationOnce((sql, params, callback) => {
+                callback(null, [{ id: 2, role: "user" }]);
+            })
+            .mockImplementationOnce((sql, params, callback) => {
+                callback(null, [{ id: 10, user_id: 2 }]);
+            })
+            .mockImplementationOnce((sql, params, callback) => {
+                callback(null, { affectedRows: 1 });
+            });
+
+        const res = await request(app)
+            .delete("/api/reports/10")
+            .send({ currentUserId: 2 });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.message).toBe("Report deleted successfully.");
+    });
+
     test("should return 404 when deleting a report that does not exist", async () => {
         db.query
             .mockImplementationOnce((sql, params, callback) => {
-                callback(null, [{ role: "admin" }]);
+                callback(null, [{ id: 1, role: "admin" }]);
             })
             .mockImplementationOnce((sql, params, callback) => {
-                callback(null, { affectedRows: 0 });
+                callback(null, []);
             });
 
         const res = await request(app)

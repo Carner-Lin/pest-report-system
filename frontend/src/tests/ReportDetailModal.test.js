@@ -97,7 +97,7 @@ describe("ReportDetailModal", () => {
             <ReportDetailModal
                 report={report}
                 onClose={jest.fn()}
-                isAdmin={true}
+                canDelete={true}
                 onDelete={onDelete}
             />
         );
