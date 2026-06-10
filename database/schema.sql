@@ -1,26 +1,20 @@
+-- Reset old tables in the correct dependency order.
+DROP TABLE IF EXISTS user_noted_reports;
+DROP TABLE IF EXISTS pest_reports;
+DROP TABLE IF EXISTS pests;
+DROP TABLE IF EXISTS users;
+
+-- Create the users table.
 CREATE TABLE users (
                        id INT AUTO_INCREMENT PRIMARY KEY,
                        username VARCHAR(50) NOT NULL,
                        email VARCHAR(100) NOT NULL UNIQUE,
                        password VARCHAR(255) NOT NULL,
+                       role VARCHAR(20) NOT NULL DEFAULT 'user',
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE pest_reports (
-                              id INT AUTO_INCREMENT PRIMARY KEY,
-                              user_id INT,
-                              pest_id INT NULL,
-                              custom_pest_name VARCHAR(100) NULL,
-                              description TEXT,
-                              location_name VARCHAR(255),
-                              latitude DOUBLE,
-                              longitude DOUBLE,
-                              image_url TEXT,
-                              report_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                              FOREIGN KEY (user_id) REFERENCES users(id),
-                              FOREIGN KEY (pest_id) REFERENCES pests(id)
-);
-
+-- Create the pests table first because pest_reports depends on it.
 CREATE TABLE pests (
                        id INT AUTO_INCREMENT PRIMARY KEY,
                        name VARCHAR(100) NOT NULL,
@@ -31,18 +25,26 @@ CREATE TABLE pests (
                        image_url TEXT
 );
 
-ALTER TABLE pest_reports
-    ADD COLUMN pest_type VARCHAR(100) NULL,
-    ADD COLUMN status_choice VARCHAR(50) NULL,
-    ADD COLUMN notifiable_choice VARCHAR(50) NULL;
+-- Create the pest reports table with all final fields included.
+CREATE TABLE pest_reports (
+                              id INT AUTO_INCREMENT PRIMARY KEY,
+                              user_id INT,
+                              pest_id INT NULL,
+                              custom_pest_name VARCHAR(100) NULL,
+                              pest_type VARCHAR(100) NULL,
+                              description TEXT,
+                              location_name VARCHAR(255),
+                              latitude DOUBLE,
+                              longitude DOUBLE,
+                              image_url TEXT,
+                              status_choice VARCHAR(50) NULL,
+                              notifiable_choice VARCHAR(50) NULL,
+                              report_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                              FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+                              FOREIGN KEY (pest_id) REFERENCES pests(id) ON DELETE SET NULL
+);
 
-ALTER TABLE users
-    ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user';
-
-UPDATE users
-SET role = 'admin'
-WHERE email = 'test@qq.com';
-
+-- Create the noted reports table.
 CREATE TABLE user_noted_reports (
                                     id INT AUTO_INCREMENT PRIMARY KEY,
                                     user_id INT NOT NULL,
@@ -52,3 +54,8 @@ CREATE TABLE user_noted_reports (
                                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
                                     FOREIGN KEY (report_id) REFERENCES pest_reports(id) ON DELETE CASCADE
 );
+
+-- Optional: promote a specific existing user to admin after inserting users.
+-- UPDATE users
+-- SET role = 'admin'
+-- WHERE email = 'test@qq.com';
