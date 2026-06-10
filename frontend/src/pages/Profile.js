@@ -232,7 +232,7 @@ function Profile() {
                 <ReportDetailModal
                     report={selectedReport}
                     onClose={() => setSelectedReport(null)}
-                    isAdmin={currentUser?.role === "admin"}
+                    canDelete={true}
                     onDelete={handleDeleteReport}
                 />
             )}

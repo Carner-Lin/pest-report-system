@@ -47,7 +47,7 @@ router.get("/", (req, res) => {
         const formattedResults = results.map((report) => ({
             ...report,
             latitude: report.latitude !== null ? Number(report.latitude) : null,
-            longitude: report.longitude !== null ? Number(report.longitude) : null
+            longitude: report.longitude !== null ? Number(report.longitude) : null,
         }));
 
         res.json(formattedResults);
@@ -80,7 +80,7 @@ router.get("/user/:userId", (req, res) => {
         const formattedResults = results.map((report) => ({
             ...report,
             latitude: report.latitude !== null ? Number(report.latitude) : null,
-            longitude: report.longitude !== null ? Number(report.longitude) : null
+            longitude: report.longitude !== null ? Number(report.longitude) : null,
         }));
 
         res.json(formattedResults);
@@ -101,9 +101,9 @@ router.get("/noted/:userId", (req, res) => {
             pests.description AS pest_description,
             users.username
         FROM user_noted_reports
-        INNER JOIN pest_reports ON user_noted_reports.report_id = pest_reports.id
-        LEFT JOIN pests ON pest_reports.pest_id = pests.id
-        LEFT JOIN users ON pest_reports.user_id = users.id
+                 INNER JOIN pest_reports ON user_noted_reports.report_id = pest_reports.id
+                 LEFT JOIN pests ON pest_reports.pest_id = pests.id
+                 LEFT JOIN users ON pest_reports.user_id = users.id
         WHERE user_noted_reports.user_id = ?
         ORDER BY user_noted_reports.created_at DESC
     `;
@@ -114,7 +114,7 @@ router.get("/noted/:userId", (req, res) => {
         const formattedResults = results.map((report) => ({
             ...report,
             latitude: report.latitude !== null ? Number(report.latitude) : null,
-            longitude: report.longitude !== null ? Number(report.longitude) : null
+            longitude: report.longitude !== null ? Number(report.longitude) : null,
         }));
 
         res.json(formattedResults);
@@ -133,7 +133,7 @@ router.post("/", upload.single("image"), (req, res) => {
         latitude,
         longitude,
         status_choice,
-        notifiable_choice
+        notifiable_choice,
     } = req.body;
 
     if (!pest_id && !custom_pest_name) {
@@ -179,7 +179,7 @@ router.post("/", upload.single("image"), (req, res) => {
             longitude || null,
             image_url,
             status_choice || "Uncertain",
-            notifiable_choice || "Uncertain"
+            notifiable_choice || "Uncertain",
         ],
         (err) => {
             if (err) return res.status(500).json(err);
@@ -247,37 +247,52 @@ router.delete("/:id", (req, res) => {
         return res.status(400).json({ error: "Current user ID is required." });
     }
 
-    const checkAdminSql = "SELECT role FROM users WHERE id = ?";
+    const checkUserSql = "SELECT id, role FROM users WHERE id = ?";
+    const checkReportSql = "SELECT id, user_id FROM pest_reports WHERE id = ?";
+    const deleteSql = "DELETE FROM pest_reports WHERE id = ?";
 
-    db.query(checkAdminSql, [currentUserId], (checkErr, checkResults) => {
-        if (checkErr) {
-            console.error("Check admin error:", checkErr);
+    db.query(checkUserSql, [currentUserId], (userErr, userResults) => {
+        if (userErr) {
+            console.error("Check user error:", userErr);
             return res.status(500).json({ error: "Database error." });
         }
 
-        if (checkResults.length === 0) {
+        if (userResults.length === 0) {
             return res.status(404).json({ error: "User not found." });
         }
 
-        const currentUser = checkResults[0];
+        const currentUser = userResults[0];
 
-        if (currentUser.role !== "admin") {
-            return res.status(403).json({ error: "Only admin can delete reports." });
-        }
-
-        const deleteSql = "DELETE FROM pest_reports WHERE id = ?";
-
-        db.query(deleteSql, [reportId], (deleteErr, deleteResult) => {
-            if (deleteErr) {
-                console.error("Delete report error:", deleteErr);
-                return res.status(500).json({ error: "Failed to delete report." });
+        db.query(checkReportSql, [reportId], (reportErr, reportResults) => {
+            if (reportErr) {
+                console.error("Check report error:", reportErr);
+                return res.status(500).json({ error: "Database error." });
             }
 
-            if (deleteResult.affectedRows === 0) {
+            if (reportResults.length === 0) {
                 return res.status(404).json({ error: "Report not found." });
             }
 
-            res.json({ message: "Report deleted successfully." });
+            const report = reportResults[0];
+            const isAdmin = currentUser.role === "admin";
+            const isOwner = Number(report.user_id) === Number(currentUserId);
+
+            if (!isAdmin && !isOwner) {
+                return res.status(403).json({ error: "You can only delete your own reports." });
+            }
+
+            db.query(deleteSql, [reportId], (deleteErr, deleteResult) => {
+                if (deleteErr) {
+                    console.error("Delete report error:", deleteErr);
+                    return res.status(500).json({ error: "Failed to delete report." });
+                }
+
+                if (deleteResult.affectedRows === 0) {
+                    return res.status(404).json({ error: "Report not found." });
+                }
+
+                res.json({ message: "Report deleted successfully." });
+            });
         });
     });
 });

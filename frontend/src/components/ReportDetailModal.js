@@ -16,7 +16,7 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export default function ReportDetailModal({
                                               report,
                                               onClose,
-                                              isAdmin = false,
+                                              canDelete = false,
                                               onDelete,
                                           }) {
     const [isNoted, setIsNoted] = useState(false);
@@ -205,7 +205,7 @@ export default function ReportDetailModal({
                                 )}
                             </div>
 
-                            {isAdmin && (
+                            {canDelete && (
                                 <button
                                     type="button"
                                     className="report-delete-btn"

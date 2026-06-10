@@ -63,6 +63,11 @@ function PestReports() {
         }
     };
 
+    const canDeleteSelectedReport =
+        !!selectedReport &&
+        !!currentUser?.id &&
+        (isAdmin || Number(selectedReport.user_id) === Number(currentUser.id));
+
     return (
         <main className="main-content">
             <h2>Pest Reports</h2>
@@ -97,8 +102,7 @@ function PestReports() {
                             </p>
 
                             <p>
-                                <strong>Area:</strong>{" "}
-                                {getCityLevelLocation(report.location_name)}
+                                <strong>Area:</strong> {getCityLevelLocation(report.location_name)}
                             </p>
                         </button>
                     ))}
@@ -109,7 +113,7 @@ function PestReports() {
                 <ReportDetailModal
                     report={selectedReport}
                     onClose={() => setSelectedReport(null)}
-                    isAdmin={isAdmin}
+                    canDelete={canDeleteSelectedReport}
                     onDelete={handleDeleteReport}
                 />
             )}
