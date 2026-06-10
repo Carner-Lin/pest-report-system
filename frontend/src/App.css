@@ -1,3 +1,4 @@
+/* Page base styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -9,7 +10,7 @@ body {
   background: white;
 }
 
-/* Navbar */
+/* Top navigation bar */
 .navbar {
   height: 75px;
   background-color: rgba(7, 67, 37, 0.93);
@@ -60,7 +61,7 @@ body {
   text-decoration: underline;
 }
 
-/* Main Content */
+/* Main page container */
 .main-content {
   padding: 40px;
   background: white;
@@ -78,7 +79,7 @@ body {
   margin-bottom: 18px;
 }
 
-/* Search Bar */
+/* Search bar */
 .search-container {
   position: absolute;
   left: 50%;
@@ -121,7 +122,7 @@ body {
   background-color: #1c4e1e;
 }
 
-/* Report Button */
+/* Main action button */
 .report-btn {
   padding: 10px 18px;
   background-color: rgba(7, 67, 37, 0.93);
@@ -136,7 +137,7 @@ body {
   background-color: #1c4e1e;
 }
 
-/* Form Elements */
+/* Shared form element styles */
 input,
 select,
 textarea {
@@ -157,7 +158,7 @@ button {
   font-family: Arial, sans-serif;
 }
 
-/* Modal Overlay */
+/* Shared modal overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -170,7 +171,7 @@ button {
   align-items: center;
 }
 
-/* Close Button */
+/* Shared close button */
 .close-btn {
   background: transparent;
   border: none;
@@ -185,7 +186,7 @@ button {
   justify-content: center;
 }
 
-/* Home Search Results */
+/* Search result section on home page */
 .home-search-results-section {
   margin-bottom: 18px;
 }
@@ -328,7 +329,7 @@ button {
   font-size: 14px;
 }
 
-/* Home Map */
+/* Home map layout */
 .home-map-wrapper {
   position: relative;
   width: 100%;
@@ -386,6 +387,7 @@ button {
   min-width: 0;
 }
 
+/* Recent report sidebar */
 .home-recent-sidebar {
   border: 2px solid rgba(7, 67, 37, 0.93);
   border-radius: 12px;
@@ -497,7 +499,7 @@ button {
   background: #1c4e1e;
 }
 
-/* Report marker */
+/* Custom report marker */
 .custom-landmark-marker {
   position: relative;
   width: 34px;
@@ -540,6 +542,7 @@ button {
   z-index: 1;
 }
 
+/* Map popup content */
 .compact-map-info-bubble {
   padding: 0;
   min-width: 190px;
@@ -621,7 +624,7 @@ button {
   background-color: #1c4e1e;
 }
 
-/* Report info window */
+/* Legacy info window styles */
 .map-info-bubble {
   display: flex;
   align-items: center;
@@ -647,21 +650,7 @@ button {
   object-fit: contain;
 }
 
-.map-info-text strong {
-  display: block;
-  font-size: 14px;
-  color: rgba(7, 67, 37, 0.93);
-  margin-bottom: 4px;
-}
-
-.map-info-text p {
-  margin: 0;
-  font-size: 12px;
-  color: #444;
-  line-height: 1.4;
-}
-
-/* Location Picker Map */
+/* Location picker map */
 .location-picker-map {
   width: 100%;
   height: 300px;
@@ -690,7 +679,7 @@ button {
   background-color: #1c4e1e;
 }
 
-/* Pest Reports */
+/* Pest report page */
 .reports-desc {
   margin-bottom: 25px;
   color: #555;
@@ -736,7 +725,7 @@ button {
   font-weight: bold;
 }
 
-/* Report Detail Modal */
+/* Report detail modal */
 .report-detail-modal {
   position: relative;
   background: rgba(7, 67, 37, 0.93);
@@ -921,6 +910,7 @@ button {
   border-radius: 12px;
 }
 
+/* Image upload and AI section */
 .submit-image-header {
   display: flex;
   align-items: center;
@@ -998,7 +988,7 @@ button {
   font-style: italic;
 }
 
-/* Submit Report Modal */
+/* Submit report modal */
 .submit-report-modal {
   position: relative;
   background: rgba(7, 67, 37, 0.93);
@@ -1064,17 +1054,39 @@ button {
   gap: 14px;
 }
 
+.submit-report-right {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Basic form panel for split PestForm */
+.submit-basic-box {
+  width: 100%;
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  padding: 14px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.submit-basic-box h4 {
+  margin: 0 0 12px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 18px;
+}
+
+/* Shared field block */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label,
 .submit-form-field label {
   display: block;
   margin-bottom: 6px;
   font-weight: bold;
   color: #333;
-}
-
-.submit-report-right {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
 }
 
 .submit-image-box {
@@ -1122,6 +1134,7 @@ button {
   text-align: center;
 }
 
+/* Location block in split PestForm */
 .submit-report-map-section {
   margin-top: 6px;
 }
@@ -1130,33 +1143,6 @@ button {
   margin: 0 0 8px 0;
   color: rgba(7, 67, 37, 0.93);
   font-size: 18px;
-}
-
-.selected-coordinates-text {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #555;
-}
-
-.submit-report-btn {
-  margin-top: 9px;
-  align-self: flex-start;
-  padding: 10px 18px;
-  background-color: rgba(7, 67, 37, 0.93);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.submit-report-btn:hover {
-  background-color: rgba(7, 67, 37, 1);
-}
-
-.submit-report-message {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #444;
 }
 
 .submit-inline-fields {
@@ -1196,7 +1182,34 @@ button {
   font-size: 13px;
 }
 
-/* Pest Encyclopedia */
+.selected-coordinates-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.submit-report-btn {
+  margin-top: 9px;
+  align-self: flex-start;
+  padding: 10px 18px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.submit-report-btn:hover {
+  background-color: rgba(7, 67, 37, 1);
+}
+
+.submit-report-message {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Pest encyclopedia cards */
 .pest-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1246,7 +1259,7 @@ button {
   color: #777;
 }
 
-/* Login and Register page */
+/* Auth page styles */
 .auth-page {
   display: flex;
   justify-content: center;
@@ -1324,6 +1337,7 @@ button {
   text-decoration: underline;
 }
 
+/* User menu */
 .nav-user-text {
   color: white;
   font-size: 16px;
@@ -1331,7 +1345,6 @@ button {
   font-weight: bold;
 }
 
-/* User dropdown menu */
 .nav-user-menu {
   position: relative;
 }
@@ -1489,7 +1502,6 @@ button {
   cursor: pointer;
 }
 
-
 .profile-report-card h4 {
   margin: 0 0 10px 0;
   color: rgba(7, 67, 37, 0.93);
@@ -1601,7 +1613,7 @@ button {
   text-decoration: underline;
 }
 
-/* Responsive */
+/* Tablet layout */
 @media (max-width: 900px) {
   .navbar {
     padding-left: 20px;
@@ -1654,6 +1666,7 @@ button {
   }
 }
 
+/* Mobile layout */
 @media (max-width: 700px) {
   .navbar {
     height: auto;

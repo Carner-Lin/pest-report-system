@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
-import LocationPickerMap from "./LocationPickerMap";
+import PestBasicFields from "./pestForm/PestBasicFields";
+import PestImageSection from "./pestForm/PestImageSection";
+import PestLocationSection from "./pestForm/PestLocationSection";
+import {
+    getEmptyFormData,
+    buildDetailedLocation,
+    getNotifiableValue,
+    buildReportPayload,
+} from "./pestForm/pestFormHelpers";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+// Main form component for creating a pest report.
 function PestForm({ onSuccess }) {
     const [pests, setPests] = useState([]);
     const [message, setMessage] = useState("");
@@ -12,27 +21,16 @@ function PestForm({ onSuccess }) {
     const [aiLoading, setAiLoading] = useState(false);
     const [aiResult, setAiResult] = useState(null);
 
-    const [formData, setFormData] = useState({
-        user_id: null,
-        pest_id: "",
-        custom_pest_name: "",
-        pest_type: "",
-        description: "",
-        location_name: "",
-        latitude: "",
-        longitude: "",
-        image_url: "",
-        status_choice: "Uncertain",
-        notifiable_choice: "Uncertain"
-    });
+    const [formData, setFormData] = useState(getEmptyFormData());
 
+    // Load current user and pest list when the form opens.
     useEffect(() => {
         const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 
         if (currentUser) {
             setFormData((prev) => ({
                 ...prev,
-                user_id: currentUser.id
+                user_id: currentUser.id,
             }));
         }
 
@@ -42,13 +40,15 @@ function PestForm({ onSuccess }) {
             .catch((err) => console.error("Error fetching pests:", err));
     }, []);
 
+    // Update a normal input field.
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
     };
 
+    // Fill fields when a pest is selected from the database.
     const handleDatabaseSelect = (e) => {
         const selectedId = e.target.value;
 
@@ -60,7 +60,7 @@ function PestForm({ onSuccess }) {
                 pest_type: "",
                 description: "",
                 status_choice: "Uncertain",
-                notifiable_choice: "Uncertain"
+                notifiable_choice: "Uncertain",
             }));
             return;
         }
@@ -71,22 +71,6 @@ function PestForm({ onSuccess }) {
 
         if (!selectedPest) return;
 
-        let notifiableValue = "Uncertain";
-
-        if (
-            selectedPest.notifiable === 1 ||
-            selectedPest.notifiable === "1" ||
-            selectedPest.notifiable === true
-        ) {
-            notifiableValue = "Yes";
-        } else if (
-            selectedPest.notifiable === 0 ||
-            selectedPest.notifiable === "0" ||
-            selectedPest.notifiable === false
-        ) {
-            notifiableValue = "No";
-        }
-
         setFormData((prev) => ({
             ...prev,
             pest_id: selectedId,
@@ -94,15 +78,16 @@ function PestForm({ onSuccess }) {
             pest_type: selectedPest.organism_type || "",
             description: selectedPest.description || "",
             status_choice: selectedPest.regulatory_status || "Uncertain",
-            notifiable_choice: notifiableValue
+            notifiable_choice: getNotifiableValue(selectedPest.notifiable),
         }));
     };
 
+    // Update form data after a map click and reverse geocode the location.
     const handleLocationSelect = ({ lat, lng }) => {
         setFormData((prev) => ({
             ...prev,
             latitude: lat,
-            longitude: lng
+            longitude: lng,
         }));
 
         setLocationMessage("");
@@ -112,35 +97,11 @@ function PestForm({ onSuccess }) {
         )
             .then((res) => res.json())
             .then((data) => {
-                const address = data.address || {};
-
-                const street =
-                    [address.house_number, address.road]
-                        .filter(Boolean)
-                        .join(" ") || "";
-
-                const suburb =
-                    address.suburb ||
-                    address.neighbourhood ||
-                    address.hamlet ||
-                    "";
-
-                const city =
-                    address.city ||
-                    address.town ||
-                    address.village ||
-                    address.county ||
-                    "";
-
-                const state = address.state || "";
-
-                const detailedLocation = [street, suburb, city, state]
-                    .filter(Boolean)
-                    .join(", ");
+                const detailedLocation = buildDetailedLocation(data.address || "");
 
                 setFormData((prev) => ({
                     ...prev,
-                    location_name: detailedLocation
+                    location_name: detailedLocation,
                 }));
             })
             .catch((err) => {
@@ -148,6 +109,7 @@ function PestForm({ onSuccess }) {
             });
     };
 
+    // Convert a typed address into coordinates.
     const handleUseTypedLocation = () => {
         const query = formData.location_name.trim();
 
@@ -178,7 +140,7 @@ function PestForm({ onSuccess }) {
                     ...prev,
                     latitude: lat,
                     longitude: lng,
-                    location_name: result.display_name || prev.location_name
+                    location_name: result.display_name || prev.location_name,
                 }));
 
                 setLocationMessage("");
@@ -189,23 +151,23 @@ function PestForm({ onSuccess }) {
             });
     };
 
+    // Store the selected image and generate a preview URL.
     const handleImageChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         setSelectedImageFile(file);
-
-        const previewUrl = URL.createObjectURL(file);
-        setImagePreview(previewUrl);
+        setImagePreview(URL.createObjectURL(file));
 
         setFormData((prev) => ({
             ...prev,
-            image_url: ""
+            image_url: "",
         }));
 
         setAiResult(null);
     };
 
+    // Send the uploaded image to the AI route and fill the predicted fields.
     const handleIdentifyPest = async () => {
         if (!selectedImageFile) {
             alert("Please upload an image first.");
@@ -221,14 +183,13 @@ function PestForm({ onSuccess }) {
 
             const res = await fetch(`${API_BASE_URL}/api/ai/identify-pest`, {
                 method: "POST",
-                body: dataToSend
+                body: dataToSend,
             });
 
             const data = await res.json();
 
             if (!res.ok) {
                 alert(data.error || "Failed to identify pest.");
-                setAiLoading(false);
                 return;
             }
 
@@ -238,7 +199,7 @@ function PestForm({ onSuccess }) {
                 ...prev,
                 custom_pest_name: data.predicted_name || prev.custom_pest_name,
                 pest_type: data.predicted_type || prev.pest_type,
-                description: data.description || prev.description
+                description: data.description || prev.description,
             }));
         } catch (error) {
             console.error("AI identify error:", error);
@@ -248,6 +209,7 @@ function PestForm({ onSuccess }) {
         }
     };
 
+    // Submit the final pest report to the backend.
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -261,44 +223,23 @@ function PestForm({ onSuccess }) {
             return;
         }
 
-        const payload = {
-            user_id: formData.user_id,
-            pest_id: formData.pest_id ? Number(formData.pest_id) : null,
-            custom_pest_name: formData.custom_pest_name,
-            pest_type: formData.pest_type,
-            description: formData.description,
-            location_name: formData.location_name,
-            latitude: Number(formData.latitude),
-            longitude: Number(formData.longitude),
-            image_url: formData.image_url || null,
-            status_choice: formData.status_choice,
-            notifiable_choice: formData.notifiable_choice
-        };
+        const payload = buildReportPayload(formData);
 
         fetch(`${API_BASE_URL}/api/reports`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
         })
             .then((res) => res.json())
             .then((data) => {
                 setMessage(data.message || "Report submitted successfully.");
 
-                setFormData({
-                    user_id: formData.user_id,
-                    pest_id: "",
-                    custom_pest_name: "",
-                    pest_type: "",
-                    description: "",
-                    location_name: "",
-                    latitude: "",
-                    longitude: "",
-                    image_url: "",
-                    status_choice: "Uncertain",
-                    notifiable_choice: "Uncertain"
-                });
+                setFormData((prev) => ({
+                    ...getEmptyFormData(),
+                    user_id: prev.user_id,
+                }));
 
                 setImagePreview("");
                 setSelectedImageFile(null);
@@ -326,181 +267,33 @@ function PestForm({ onSuccess }) {
         <form onSubmit={handleSubmit} className="submit-report-form">
             <div className="submit-report-top">
                 <div className="submit-report-left">
-                    <div className="submit-form-field">
-                        <label>Select from database (optional)</label>
-                        <select
-                            name="pest_id"
-                            value={formData.pest_id}
-                            onChange={handleDatabaseSelect}
-                        >
-                            <option value="">-- Select from database --</option>
-                            {pests.map((pest) => (
-                                <option key={pest.id} value={pest.id}>
-                                    {pest.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="submit-form-field">
-                        <label>Pest name</label>
-                        <input
-                            type="text"
-                            name="custom_pest_name"
-                            value={formData.custom_pest_name}
-                            onChange={handleChange}
-                            placeholder="Enter pest name"
-                        />
-                    </div>
-
-                    <div className="submit-form-field">
-                        <label>Pest type</label>
-                        <input
-                            type="text"
-                            name="pest_type"
-                            value={formData.pest_type}
-                            onChange={handleChange}
-                            placeholder="Enter pest type"
-                        />
-                    </div>
-
-                    <div className="submit-inline-fields">
-                        <div className="submit-form-field">
-                            <label>Status</label>
-                            <select
-                                name="status_choice"
-                                value={formData.status_choice}
-                                onChange={handleChange}
-                            >
-                                <option value="Uncertain">Uncertain</option>
-                                <option value="Regulated">Regulated</option>
-                                <option value="Non-regulated">Non-regulated</option>
-                                <option value="Not assessed">Not assessed</option>
-                            </select>
-                        </div>
-
-                        <div className="submit-form-field">
-                            <label>Notifiable</label>
-                            <select
-                                name="notifiable_choice"
-                                value={formData.notifiable_choice}
-                                onChange={handleChange}
-                            >
-                                <option value="Uncertain">Uncertain</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="submit-form-field">
-                        <label>Description</label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            placeholder="Enter pest description"
-                        />
-                    </div>
-
-                    <div className="submit-form-field">
-                        <label>Detailed location</label>
-                        <div className="location-input-row">
-                            <input
-                                type="text"
-                                name="location_name"
-                                value={formData.location_name}
-                                onChange={handleChange}
-                                placeholder="Enter or select a location"
-                            />
-                            <button
-                                type="button"
-                                className="location-search-btn"
-                                onClick={handleUseTypedLocation}
-                            >
-                                Locate
-                            </button>
-                        </div>
-                        {locationMessage && (
-                            <p className="location-error-text">{locationMessage}</p>
-                        )}
-                    </div>
+                    <PestBasicFields
+                        pests={pests}
+                        formData={formData}
+                        onChange={handleChange}
+                        onDatabaseSelect={handleDatabaseSelect}
+                    />
                 </div>
 
                 <div className="submit-report-right">
-                    <div className="submit-image-box">
-                        <div className="submit-image-header">
-                            <label className="submit-image-label">Upload pest image</label>
-                            <button
-                                type="button"
-                                className="ai-identify-btn"
-                                onClick={handleIdentifyPest}
-                                disabled={aiLoading}
-                            >
-                                {aiLoading ? "Identifying..." : "Identify with AI"}
-                            </button>
-                        </div>
-
-                        <div className="custom-file-upload">
-                            <input
-                                id="pest-image-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden-file-input"
-                            />
-
-                            <label htmlFor="pest-image-upload" className="custom-file-btn">
-                                Choose File
-                            </label>
-
-                            <span className="custom-file-name">
-                                {selectedImageFile ? selectedImageFile.name : "No file chosen"}
-                            </span>
-                        </div>
-
-                        <div className="submit-image-preview-box">
-                            {imagePreview ? (
-                                <img
-                                    src={imagePreview}
-                                    alt="Preview"
-                                    className="submit-image-preview"
-                                />
-                            ) : (
-                                <div className="submit-image-placeholder">
-                                    No image selected
-                                </div>
-                            )}
-                        </div>
-
-                        {aiResult && (
-                            <div className="ai-result-box">
-                                <p><strong>AI Predicted Name:</strong> {aiResult.predicted_name}</p>
-                                <p><strong>Type:</strong> {aiResult.predicted_type}</p>
-                                <p><strong>Confidence:</strong> {Math.round((aiResult.confidence || 0) * 100)}%</p>
-                                <p className="ai-result-note">
-                                    AI suggestion only. Please verify before submitting.
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                    <PestImageSection
+                        selectedImageFile={selectedImageFile}
+                        imagePreview={imagePreview}
+                        aiLoading={aiLoading}
+                        aiResult={aiResult}
+                        onImageChange={handleImageChange}
+                        onIdentifyPest={handleIdentifyPest}
+                    />
                 </div>
             </div>
 
-            <div className="submit-report-map-section">
-                <h4>Select report location</h4>
-                <LocationPickerMap
-                    selectedLocation={
-                        formData.latitude && formData.longitude
-                            ? {
-                                lat: Number(formData.latitude),
-                                lng: Number(formData.longitude)
-                            }
-                            : null
-                    }
-                    onSelectLocation={handleLocationSelect}
-                />
-            </div>
+            <PestLocationSection
+                formData={formData}
+                locationMessage={locationMessage}
+                onChange={handleChange}
+                onUseTypedLocation={handleUseTypedLocation}
+                onSelectLocation={handleLocationSelect}
+            />
 
             <button type="submit" className="submit-report-btn">
                 Submit Report
