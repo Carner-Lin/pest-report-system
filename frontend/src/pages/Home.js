@@ -5,41 +5,16 @@ import SearchResultsPanel from "../components/SearchResultsPanel";
 import ReportDetailModal from "../components/ReportDetailModal";
 import HomeMap from "../components/HomeMap";
 import defaultReportImage from "../assets/default-report.png";
+import {
+    getDisplayPestName,
+    getDisplayUsername,
+    getDisplayDate,
+    getCityLevelLocation,
+} from "../utils/reportHelpers";
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-function getDisplayPestName(report) {
-    return report.pest_name || report.custom_pest_name || "Unknown Pest";
-}
-
-function getDisplayUsername(report) {
-    return report.username || "Anonymous User";
-}
-
-function getDisplayDate(report) {
-    if (!report.report_date) return "Unknown date";
-
-    return new Date(report.report_date).toLocaleDateString("en-NZ", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-}
-
-function getCityLevelLocation(locationName) {
-    if (!locationName) return "Unknown area";
-
-    const parts = locationName
-        .split(",")
-        .map((part) => part.trim())
-        .filter(Boolean);
-
-    if (parts.length >= 2) {
-        return parts[parts.length - 2];
-    }
-
-    return locationName;
-}
-
+// This page shows the main home view with search, map, and recent reports.
 function Home() {
     const [showForm, setShowForm] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -208,7 +183,7 @@ function Home() {
 
                                             <p>
                                                 <strong>Area:</strong>{" "}
-                                                {getCityLevelLocation(report.location_name)}
+                                                {getCityLevelLocation(report.location_name, "Unknown area")}
                                             </p>
 
                                             <div className="home-recent-report-actions">

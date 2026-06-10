@@ -11,9 +11,11 @@ import plantIcon from "../assets/markers/plant.svg";
 import birdIcon from "../assets/markers/bird.svg";
 import spiderIcon from "../assets/markers/spider.svg";
 import otherIcon from "../assets/markers/other.svg";
+import { getDisplayPestName } from "../utils/reportHelpers";
 
 const DEFAULT_CENTER = { lat: -37.787, lng: 175.279 };
 
+// This controller moves the map to a selected report location.
 function MapController({ focusReport }) {
     const map = useMap();
 
@@ -39,6 +41,7 @@ function MapController({ focusReport }) {
     return null;
 }
 
+// This helper chooses a marker icon based on pest type.
 function getMarkerIconByType(report) {
     const pestType = (report.pest_type || report.organism_type || "").toLowerCase();
 
@@ -51,10 +54,7 @@ function getMarkerIconByType(report) {
     return otherIcon;
 }
 
-function getDisplayPestName(report) {
-    return report.pest_name || report.custom_pest_name || "Unknown Pest";
-}
-
+// This component renders the report markers and popup on the home map.
 export default function HomeMap({
                                     reports,
                                     selectedReport,

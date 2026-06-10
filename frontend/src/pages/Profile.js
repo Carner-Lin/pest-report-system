@@ -1,22 +1,14 @@
 import { useEffect, useState } from "react";
 import ReportDetailModal from "../components/ReportDetailModal";
 import defaultAvatar from "../assets/default-avatar.png";
+import {
+    getDisplayPestName,
+    getDisplayDate,
+} from "../utils/reportHelpers";
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-function getDisplayPestName(report) {
-    return report.pest_name || report.custom_pest_name || "Unknown Pest";
-}
-
-function getDisplayDate(report) {
-    if (!report.report_date) return "Unknown date";
-
-    return new Date(report.report_date).toLocaleDateString("en-NZ", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-}
-
+// This page shows the current user's profile and saved reports.
 function Profile() {
     const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 
@@ -186,9 +178,7 @@ function Profile() {
                                 <div className="profile-report-list">
                                     {myReports.map((report) => (
                                         <div key={report.id} className="profile-report-card">
-                                            <div
-                                                className="profile-report-card-content"
-                                            >
+                                            <div className="profile-report-card-content">
                                                 <h4>{getDisplayPestName(report)}</h4>
                                                 <p><strong>Date:</strong> {getDisplayDate(report)}</p>
                                                 <p><strong>Location:</strong> {report.location_name || "Unknown location"}</p>
@@ -232,9 +222,7 @@ function Profile() {
                                 <div className="profile-report-list">
                                     {notedReports.map((report) => (
                                         <div key={report.id} className="profile-report-card">
-                                            <div
-                                                className="profile-report-card-content"
-                                            >
+                                            <div className="profile-report-card-content">
                                                 <h4>{getDisplayPestName(report)}</h4>
                                                 <p><strong>Date:</strong> {getDisplayDate(report)}</p>
                                                 <p><strong>Location:</strong> {report.location_name || "Unknown location"}</p>

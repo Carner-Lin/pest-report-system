@@ -1,36 +1,11 @@
-function getDisplayPestName(report) {
-    return report.pest_name || report.custom_pest_name || "Unknown Pest";
-}
+import {
+    getDisplayPestName,
+    getDisplayUsername,
+    getDisplayDate,
+    getCityLevelLocation,
+} from "../utils/reportHelpers";
 
-function getDisplayUsername(report) {
-    return report.username || "Anonymous User";
-}
-
-function getDisplayDate(report) {
-    if (!report.report_date) return "Unknown date";
-
-    return new Date(report.report_date).toLocaleDateString("en-NZ", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-}
-
-function getCityLevelLocation(locationName) {
-    if (!locationName) return "Unknown city";
-
-    const parts = locationName
-        .split(",")
-        .map((part) => part.trim())
-        .filter(Boolean);
-
-    if (parts.length >= 2) {
-        return parts[parts.length - 2];
-    }
-
-    return locationName;
-}
-
+// This component displays the search result cards on the home page.
 export default function SearchResultsPanel({
                                                reports,
                                                expanded,

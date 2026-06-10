@@ -1,25 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Map, Marker } from "@vis.gl/react-google-maps";
+import {
+    getDisplayPestName,
+    getDisplayUsername,
+    getDisplayDate,
+    getDisplayType,
+    getDisplayStatus,
+    getDisplayNotifiable,
+    getValidSelectedLocation,
+} from "../utils/reportHelpers";
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-function getDisplayPestName(report) {
-    return report.pest_name || report.custom_pest_name || "Unknown Pest";
-}
-
-function getDisplayUsername(report) {
-    return report.username || "Anonymous User";
-}
-
-function getDisplayDate(report) {
-    if (!report.report_date) return "Unknown date";
-
-    return new Date(report.report_date).toLocaleDateString("en-NZ", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-}
-
+// This modal shows the full details of a selected report.
 export default function ReportDetailModal({
                                               report,
                                               onClose,
@@ -38,14 +31,7 @@ export default function ReportDetailModal({
     }, []);
 
     const validSelectedLocation = useMemo(() => {
-        if (!report || report.latitude == null || report.longitude == null) {
-            return null;
-        }
-
-        return {
-            lat: Number(report.latitude),
-            lng: Number(report.longitude),
-        };
+        return getValidSelectedLocation(report);
     }, [report]);
 
     const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
@@ -73,23 +59,9 @@ export default function ReportDetailModal({
 
     if (!report) return null;
 
-    const displayType =
-        report.pest_type || report.organism_type || "Unknown";
-
-    const displayStatus =
-        report.status_choice || report.regulatory_status || "Unknown";
-
-    const displayNotifiable =
-        report.notifiable_choice ||
-        (report.notifiable === 1 ||
-        report.notifiable === "1" ||
-        report.notifiable === true
-            ? "Yes"
-            : report.notifiable === 0 ||
-            report.notifiable === "0" ||
-            report.notifiable === false
-                ? "No"
-                : "Unknown");
+    const displayType = getDisplayType(report);
+    const displayStatus = getDisplayStatus(report);
+    const displayNotifiable = getDisplayNotifiable(report);
 
     const handleToggleNote = async () => {
         if (!currentUser?.id) {
