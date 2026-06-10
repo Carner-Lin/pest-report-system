@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const pestRoutes = require("./routes/pests");
 const reportRoutes = require("./routes/reports");
@@ -12,6 +13,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+/* Serve uploaded report images */
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/test", (req, res) => {
     res.json({ message: "Backend is working" });

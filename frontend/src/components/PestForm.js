@@ -6,7 +6,6 @@ import {
     getEmptyFormData,
     buildDetailedLocation,
     getNotifiableValue,
-    buildReportPayload,
 } from "./pestForm/pestFormHelpers";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -210,7 +209,7 @@ function PestForm({ onSuccess }) {
     };
 
     // Submit the final pest report to the backend.
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.custom_pest_name.trim()) {
@@ -223,44 +222,71 @@ function PestForm({ onSuccess }) {
             return;
         }
 
-        const payload = buildReportPayload(formData);
+        try {
+            const dataToSend = new FormData();
 
-        fetch(`${API_BASE_URL}/api/reports`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setMessage(data.message || "Report submitted successfully.");
+            dataToSend.append("user_id", formData.user_id || "");
+            dataToSend.append("pest_id", formData.pest_id || "");
+            dataToSend.append("custom_pest_name", formData.custom_pest_name || "");
+            dataToSend.append("pest_type", formData.pest_type || "");
+            dataToSend.append("description", formData.description || "");
+            dataToSend.append("location_name", formData.location_name || "");
+            dataToSend.append("latitude", formData.latitude || "");
+            dataToSend.append("longitude", formData.longitude || "");
+            dataToSend.append("status_choice", formData.status_choice || "Uncertain");
+            dataToSend.append("notifiable_choice", formData.notifiable_choice || "Uncertain");
 
-                setFormData((prev) => ({
-                    ...getEmptyFormData(),
-                    user_id: prev.user_id,
-                }));
+            if (selectedImageFile) {
+                dataToSend.append("image", selectedImageFile);
+            }
 
-                setImagePreview("");
-                setSelectedImageFile(null);
-                setAiResult(null);
-                setLocationMessage("");
-
-                const fileInput = document.getElementById("pest-image-upload");
-                if (fileInput) {
-                    fileInput.value = "";
-                }
-
-                if (onSuccess) {
-                    setTimeout(() => {
-                        onSuccess();
-                    }, 500);
-                }
-            })
-            .catch((err) => {
-                console.error("Error submitting report:", err);
-                setMessage("Failed to submit report.");
+            const res = await fetch(`${API_BASE_URL}/api/reports`, {
+                method: "POST",
+                body: dataToSend,
             });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setMessage(data.error || "Failed to submit report.");
+                return;
+            }
+
+            setMessage(data.message || "Report submitted successfully.");
+
+            setFormData({
+                user_id: formData.user_id,
+                pest_id: "",
+                custom_pest_name: "",
+                pest_type: "",
+                description: "",
+                location_name: "",
+                latitude: "",
+                longitude: "",
+                image_url: "",
+                status_choice: "Uncertain",
+                notifiable_choice: "Uncertain"
+            });
+
+            setImagePreview("");
+            setSelectedImageFile(null);
+            setAiResult(null);
+            setLocationMessage("");
+
+            const fileInput = document.getElementById("pest-image-upload");
+            if (fileInput) {
+                fileInput.value = "";
+            }
+
+            if (onSuccess) {
+                setTimeout(() => {
+                    onSuccess();
+                }, 500);
+            }
+        } catch (err) {
+            console.error("Error submitting report:", err);
+            setMessage("Failed to submit report.");
+        }
     };
 
     return (

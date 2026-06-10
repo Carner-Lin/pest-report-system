@@ -1,6 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+/* Create uploads directory if it does not exist */
+const uploadDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+/* Store uploaded report images on the server */
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    },
+});
+
+const upload = multer({ storage });
 
 // GET /api/reports
 router.get("/", (req, res) => {
@@ -100,7 +122,7 @@ router.get("/noted/:userId", (req, res) => {
 });
 
 // POST /api/reports
-router.post("/", (req, res) => {
+router.post("/", upload.single("image"), (req, res) => {
     const {
         user_id,
         pest_id,
@@ -110,13 +132,20 @@ router.post("/", (req, res) => {
         location_name,
         latitude,
         longitude,
-        image_url,
         status_choice,
         notifiable_choice
     } = req.body;
 
     if (!pest_id && !custom_pest_name) {
         return res.status(400).json({ error: "Pest required" });
+    }
+
+    let image_url = null;
+
+    if (req.file) {
+        const backendBaseUrl =
+            process.env.BACKEND_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+        image_url = `${backendBaseUrl}/uploads/${req.file.filename}`;
     }
 
     const sql = `
@@ -140,21 +169,21 @@ router.post("/", (req, res) => {
     db.query(
         sql,
         [
-            user_id,
-            pest_id,
-            custom_pest_name,
-            pest_type,
-            description,
-            location_name,
-            latitude,
-            longitude,
+            user_id || null,
+            pest_id || null,
+            custom_pest_name || null,
+            pest_type || null,
+            description || null,
+            location_name || null,
+            latitude || null,
+            longitude || null,
             image_url,
-            status_choice,
-            notifiable_choice
+            status_choice || "Uncertain",
+            notifiable_choice || "Uncertain"
         ],
         (err) => {
             if (err) return res.status(500).json(err);
-            res.json({ message: "Report submitted" });
+            res.json({ message: "Report submitted", image_url });
         }
     );
 });
