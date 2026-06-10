@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 
+// Bridges Google Maps click events back into React form state.
 function MapClickHandler({ onSelectLocation }) {
     const map = useMap();
 
@@ -22,6 +23,7 @@ function MapClickHandler({ onSelectLocation }) {
     return null;
 }
 
+// Recenter the picker after geocoding or browser geolocation chooses a point.
 function MapLocationController({ selectedLocation }) {
     const map = useMap();
 
@@ -35,6 +37,7 @@ function MapLocationController({ selectedLocation }) {
     return null;
 }
 
+// Lets users choose a report location by address, map click, or browser geolocation.
 function LocationPickerMap({ selectedLocation, onSelectLocation }) {
     const handleUseCurrentLocation = () => {
         if (!navigator.geolocation) {
@@ -54,6 +57,7 @@ function LocationPickerMap({ selectedLocation, onSelectLocation }) {
                 alert("Unable to get your current location.");
             },
             {
+                // A pest sighting should use the freshest precise position available.
                 enableHighAccuracy: true,
                 timeout: 10000,
                 maximumAge: 0

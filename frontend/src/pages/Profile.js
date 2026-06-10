@@ -27,6 +27,7 @@ function Profile() {
 
         const fetchProfileData = async () => {
             try {
+                // Load posted and noted reports together so both panels update as a set.
                 const [userReports, savedReports] = await Promise.all([
                     getUserReports(currentUser.id),
                     getNotedReports(currentUser.id),
@@ -60,6 +61,7 @@ function Profile() {
         try {
             await deleteReport(reportId, currentUser.id);
 
+            // Remove deleted reports from both profile lists without a full refetch.
             setMyReports((prev) => prev.filter((report) => report.id !== reportId));
             setNotedReports((prev) => prev.filter((report) => report.id !== reportId));
 
@@ -89,6 +91,7 @@ function Profile() {
         try {
             await removeNotedReport(reportId, currentUser.id);
 
+            // Keep the noted list in sync after a successful backend delete.
             setNotedReports((prev) => prev.filter((report) => report.id !== reportId));
 
             if (selectedReport?.id === reportId) {

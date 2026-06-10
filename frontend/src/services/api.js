@@ -3,6 +3,7 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 async function handleJsonResponse(response, fallbackMessage) {
+    // Normalize backend errors so pages can show one consistent message.
     const data = await response.json();
 
     if (!response.ok) {

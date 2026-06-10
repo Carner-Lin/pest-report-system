@@ -30,6 +30,7 @@ export function getNotifiableValue(notifiable) {
 }
 
 export function buildDetailedLocation(address) {
+    // Prefer the most human-readable address parts returned by Nominatim.
     const street =
         [address.house_number, address.road].filter(Boolean).join(" ") || "";
 
@@ -52,6 +53,7 @@ export function buildDetailedLocation(address) {
 }
 
 export function buildReportPayload(formData) {
+    // Convert form strings into the backend report shape used by tests and callers.
     return {
         user_id: formData.user_id,
         pest_id: formData.pest_id ? Number(formData.pest_id) : null,

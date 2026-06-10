@@ -16,6 +16,7 @@ function App() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Keep the navbar user state in sync with localStorage changes.
         const loadCurrentUser = () => {
             const storedUser = localStorage.getItem("currentUser");
             setCurrentUser(storedUser ? JSON.parse(storedUser) : null);
@@ -27,6 +28,7 @@ function App() {
             loadCurrentUser();
         };
 
+        // Close the user menu when the user clicks outside the dropdown.
         const handleClickOutside = (event) => {
             if (
                 userMenuRef.current &&
@@ -48,6 +50,7 @@ function App() {
     }, []);
 
     const handleLogout = () => {
+        // Notify this tab so components that read currentUser can refresh immediately.
         localStorage.removeItem("currentUser");
         window.dispatchEvent(new Event("userChanged"));
         setShowUserMenu(false);

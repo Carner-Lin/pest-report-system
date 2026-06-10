@@ -5,13 +5,15 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-/* Create uploads directory if it does not exist */
+// This route handles report creation, report lookup, notes, and deletion.
+
+// Create the uploads directory if it does not already exist.
 const uploadDir = path.join(__dirname, "..", "uploads");
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-/* Store uploaded report images on the server */
+// Save uploaded report images to the local uploads folder.
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir);
@@ -25,6 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // GET /api/reports
+// Return all reports with joined pest and user details.
 router.get("/", (req, res) => {
     const sql = `
         SELECT
@@ -44,6 +47,7 @@ router.get("/", (req, res) => {
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json(err);
 
+        // Convert coordinates to numbers for frontend map usage.
         const formattedResults = results.map((report) => ({
             ...report,
             latitude: report.latitude !== null ? Number(report.latitude) : null,
@@ -55,6 +59,7 @@ router.get("/", (req, res) => {
 });
 
 // GET /api/reports/user/:userId
+// Return all reports submitted by one user.
 router.get("/user/:userId", (req, res) => {
     const { userId } = req.params;
 
@@ -77,6 +82,7 @@ router.get("/user/:userId", (req, res) => {
     db.query(sql, [userId], (err, results) => {
         if (err) return res.status(500).json(err);
 
+        // Convert coordinates to numbers for frontend map usage.
         const formattedResults = results.map((report) => ({
             ...report,
             latitude: report.latitude !== null ? Number(report.latitude) : null,
@@ -88,6 +94,7 @@ router.get("/user/:userId", (req, res) => {
 });
 
 // GET /api/reports/noted/:userId
+// Return all reports noted by one user.
 router.get("/noted/:userId", (req, res) => {
     const { userId } = req.params;
 
@@ -111,6 +118,7 @@ router.get("/noted/:userId", (req, res) => {
     db.query(sql, [userId], (err, results) => {
         if (err) return res.status(500).json(err);
 
+        // Convert coordinates to numbers for frontend map usage.
         const formattedResults = results.map((report) => ({
             ...report,
             latitude: report.latitude !== null ? Number(report.latitude) : null,
@@ -122,6 +130,7 @@ router.get("/noted/:userId", (req, res) => {
 });
 
 // POST /api/reports
+// Create a new report and optionally save an uploaded image.
 router.post("/", upload.single("image"), (req, res) => {
     const {
         user_id,
@@ -136,12 +145,14 @@ router.post("/", upload.single("image"), (req, res) => {
         notifiable_choice,
     } = req.body;
 
+    // Require either a known pest reference or a custom pest name.
     if (!pest_id && !custom_pest_name) {
         return res.status(400).json({ error: "Pest required" });
     }
 
     let image_url = null;
 
+    // Build a public image URL when an image file is uploaded.
     if (req.file) {
         const backendBaseUrl =
             process.env.BACKEND_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
@@ -189,10 +200,12 @@ router.post("/", upload.single("image"), (req, res) => {
 });
 
 // POST /api/reports/:reportId/note
+// Save a report to one user's noted list.
 router.post("/:reportId/note", (req, res) => {
     const { reportId } = req.params;
     const { userId } = req.body;
 
+    // Require a user id before creating the note record.
     if (!userId) {
         return res.status(400).json({ error: "User ID is required." });
     }
@@ -204,6 +217,7 @@ router.post("/:reportId/note", (req, res) => {
 
     db.query(sql, [userId, reportId], (err) => {
         if (err) {
+            // Return a conflict when the same note already exists.
             if (err.code === "ER_DUP_ENTRY") {
                 return res.status(409).json({ error: "Report already noted." });
             }
@@ -216,6 +230,7 @@ router.post("/:reportId/note", (req, res) => {
 });
 
 // DELETE /api/reports/:reportId/note/:userId
+// Remove a report from one user's noted list.
 router.delete("/:reportId/note/:userId", (req, res) => {
     const { reportId, userId } = req.params;
 
@@ -239,10 +254,12 @@ router.delete("/:reportId/note/:userId", (req, res) => {
 });
 
 // DELETE /api/reports/:id
+// Allow an admin or the report owner to delete a report.
 router.delete("/:id", (req, res) => {
     const reportId = req.params.id;
     const { currentUserId } = req.body;
 
+    // Require the current user id for permission checks.
     if (!currentUserId) {
         return res.status(400).json({ error: "Current user ID is required." });
     }
@@ -251,6 +268,7 @@ router.delete("/:id", (req, res) => {
     const checkReportSql = "SELECT id, user_id FROM pest_reports WHERE id = ?";
     const deleteSql = "DELETE FROM pest_reports WHERE id = ?";
 
+    // Load the current user first to check admin status.
     db.query(checkUserSql, [currentUserId], (userErr, userResults) => {
         if (userErr) {
             console.error("Check user error:", userErr);
@@ -263,6 +281,7 @@ router.delete("/:id", (req, res) => {
 
         const currentUser = userResults[0];
 
+        // Load the target report to check ownership.
         db.query(checkReportSql, [reportId], (reportErr, reportResults) => {
             if (reportErr) {
                 console.error("Check report error:", reportErr);
@@ -277,6 +296,7 @@ router.delete("/:id", (req, res) => {
             const isAdmin = currentUser.role === "admin";
             const isOwner = Number(report.user_id) === Number(currentUserId);
 
+            // Only admins or report owners can delete the report.
             if (!isAdmin && !isOwner) {
                 return res.status(403).json({ error: "You can only delete your own reports." });
             }

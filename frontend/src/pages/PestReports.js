@@ -23,6 +23,7 @@ function PestReports() {
     useEffect(() => {
         const fetchAllReports = async () => {
             try {
+                // Load the complete report list once for the browse page.
                 const data = await getReports();
                 setReports(data);
             } catch (err) {
@@ -66,6 +67,7 @@ function PestReports() {
     const canDeleteSelectedReport =
         !!selectedReport &&
         !!currentUser?.id &&
+        // The backend enforces this too; the UI mirrors it for button visibility.
         (isAdmin || Number(selectedReport.user_id) === Number(currentUser.id));
 
     return (

@@ -31,6 +31,7 @@ function Home() {
 
     const fetchReports = async () => {
         try {
+            // Refresh the shared report list after page load or form submission.
             const data = await getReports();
             setReports(data);
         } catch (err) {
@@ -47,6 +48,7 @@ function Home() {
 
         if (!keyword) return [];
 
+        // Search by either database pest name or user-entered pest name.
         return reports.filter((report) => {
             const pestName = (
                 report.pest_name ||
@@ -83,6 +85,7 @@ function Home() {
     const handleReportClick = () => {
         const currentUser = localStorage.getItem("currentUser");
 
+        // Only logged-in users can submit reports.
         if (!currentUser) {
             setShowLoginPrompt(true);
             return;

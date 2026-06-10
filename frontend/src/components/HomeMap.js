@@ -52,6 +52,7 @@ export default function HomeMap({
                                     focusReport,
                                     onViewDetail,
                                 }) {
+    // Skip reports without coordinates so Google Maps only receives valid markers.
     const validReports = reports.filter(
         (report) => report.latitude != null && report.longitude != null
     );

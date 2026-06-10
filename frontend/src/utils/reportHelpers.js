@@ -21,6 +21,7 @@ export function getDisplayDate(report) {
 export function getCityLevelLocation(locationName, fallback = "Unknown city") {
     if (!locationName) return fallback;
 
+    // Nominatim returns comma-separated addresses; the city is usually near the end.
     const parts = locationName
         .split(",")
         .map((part) => part.trim())
@@ -46,6 +47,7 @@ export function getDisplayNotifiable(report) {
         return report.notifiable_choice;
     }
 
+    // Support MySQL, JSON, and boolean representations of the same flag.
     if (
         report?.notifiable === 1 ||
         report?.notifiable === "1" ||
@@ -70,6 +72,7 @@ export function getValidSelectedLocation(report) {
         return null;
     }
 
+    // Google Maps expects numeric lat/lng values, not database strings.
     return {
         lat: Number(report.latitude),
         lng: Number(report.longitude),

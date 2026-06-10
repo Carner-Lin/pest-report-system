@@ -23,6 +23,7 @@ export default function ReportDetailModal({
     const [noteLoading, setNoteLoading] = useState(false);
 
     useEffect(() => {
+        // Prevent the page behind the modal from scrolling.
         document.body.style.overflow = "hidden";
 
         return () => {
@@ -42,6 +43,7 @@ export default function ReportDetailModal({
             return;
         }
 
+        // Check whether this report is already saved by the current user.
         fetch(`${API_BASE_URL}/api/reports/noted/${currentUser.id}`)
             .then((res) => res.json())
             .then((data) => {
@@ -72,6 +74,7 @@ export default function ReportDetailModal({
         setNoteLoading(true);
 
         try {
+            // The same button toggles between creating and removing a saved report note.
             if (!isNoted) {
                 const res = await fetch(
                     `${API_BASE_URL}/api/reports/${report.id}/note`,

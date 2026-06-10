@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 
+// This file creates the MySQL connection using environment variables.
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -11,7 +12,8 @@ const db = mysql.createConnection({
     },
 });
 
-db.connect(err => {
+// Connect once when the backend starts.
+db.connect((err) => {
     if (err) {
         console.error("DB connection failed:", err);
     } else {
