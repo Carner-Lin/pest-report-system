@@ -51,7 +51,29 @@ Install these before running the project:
 - A Google Maps API key
 - A Gemini API key
 
-## Database Setup
+## Installation and Setup
+
+Follow these steps after downloading or extracting the project source code.
+
+### 1. Install Backend Dependencies
+
+Open a terminal in the project root folder, then run:
+
+```bash
+cd backend
+npm install
+```
+
+### 2. Install Frontend Dependencies
+
+Open a second terminal in the project root folder, then run:
+
+```bash
+cd frontend
+npm install
+```
+
+### 3. Create the MySQL Database
 
 Create a MySQL database:
 
@@ -59,7 +81,7 @@ Create a MySQL database:
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS pest_report_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-Create the tables:
+From the project root folder, create the tables:
 
 ```bash
 mysql -u root -p pest_report_system < database/schema.sql
@@ -79,16 +101,9 @@ mysql -u root -p pest_report_system < zl354_export.sql
 
 Use either `schema.sql` plus `seed.sql`, or the full export file, depending on whether you want a clean database or the exported sample data.
 
-## Backend Setup
+### 4. Configure the Backend Environment
 
-Install backend dependencies:
-
-```bash
-cd backend
-npm install
-```
-
-Create `backend/.env`:
+Create a new file named `backend/.env`. You can copy the structure from `backend/.env.example`:
 
 ```env
 DB_HOST=localhost
@@ -101,7 +116,22 @@ BACKEND_BASE_URL=http://localhost:5000
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Start the backend server:
+Replace `your_mysql_password` and `your_gemini_api_key` with real local values.
+
+### 5. Configure the Frontend Environment
+
+Create a new file named `frontend/.env`. You can copy the structure from `frontend/.env.example`:
+
+```env
+REACT_APP_API_BASE_URL=http://localhost:5000
+REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
+
+Replace `your_google_maps_api_key` with a real Google Maps JavaScript API key.
+
+### 6. Start the Backend
+
+In the backend terminal, run:
 
 ```bash
 npm start
@@ -125,23 +155,9 @@ Health check:
 http://localhost:5000/api/test
 ```
 
-## Frontend Setup
+### 7. Start the Frontend
 
-Open a second terminal and install frontend dependencies:
-
-```bash
-cd frontend
-npm install
-```
-
-Create `frontend/.env`:
-
-```env
-REACT_APP_API_BASE_URL=http://localhost:5000
-REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-```
-
-Start the frontend:
+In the frontend terminal, run:
 
 ```bash
 npm start
@@ -155,10 +171,34 @@ http://localhost:3000
 
 ## Run the App
 
-1. Start MySQL and make sure the database has been created.
+After setup is complete, run the application in this order:
+
+1. Start MySQL and make sure the `pest_report_system` database exists.
 2. Start the backend from `backend/` with `npm start`.
 3. Start the frontend from `frontend/` with `npm start`.
-4. Open `http://localhost:3000` in your browser.
+4. Open `http://localhost:3000` in a browser.
+
+The backend must be running before the frontend can load API data.
+
+## Running From Submitted Source Code
+
+The submitted source code does not include installed dependencies or real `.env` files.
+After extracting the project, restore dependencies with:
+
+```bash
+cd backend
+npm install
+```
+
+```bash
+cd frontend
+npm install
+```
+
+The real `.env` files are not included for security reasons because they contain local
+passwords and API keys. Create `backend/.env` and `frontend/.env` from the matching
+`.env.example` files, then fill in the local MySQL password, Google Maps API key,
+and Gemini API key before running the application.
 
 ## Useful Commands
 
