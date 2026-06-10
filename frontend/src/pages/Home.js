@@ -11,8 +11,7 @@ import {
     getDisplayDate,
     getCityLevelLocation,
 } from "../utils/reportHelpers";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { getReports } from "../services/api";
 
 // This page shows the main home view with search, map, and recent reports.
 function Home() {
@@ -30,11 +29,13 @@ function Home() {
 
     const navigate = useNavigate();
 
-    const fetchReports = () => {
-        fetch(`${API_BASE_URL}/api/reports`)
-            .then((res) => res.json())
-            .then((data) => setReports(data))
-            .catch((err) => console.error("Error fetching reports:", err));
+    const fetchReports = async () => {
+        try {
+            const data = await getReports();
+            setReports(data);
+        } catch (err) {
+            console.error("Error fetching reports:", err);
+        }
     };
 
     useEffect(() => {

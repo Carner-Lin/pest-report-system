@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { getPests } from "../services/api";
 
+// This page displays common or high-priority pests in New Zealand.
 function PestEncyclopedia() {
     const [pests, setPests] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/api/pests`)
-            .then((res) => res.json())
-            .then((data) => {
+        const fetchPests = async () => {
+            try {
+                const data = await getPests();
                 setPests(data);
-                setLoading(false);
-            })
-            .catch((err) => {
+            } catch (err) {
                 console.error("Error fetching pests:", err);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchPests();
     }, []);
 
     return (

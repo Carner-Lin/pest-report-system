@@ -6,8 +6,10 @@ import {
     getDisplayDate,
     getCityLevelLocation,
 } from "../utils/reportHelpers";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import {
+    getReports,
+    deleteReport,
+} from "../services/api";
 
 // This page displays all submitted pest reports.
 function PestReports() {
@@ -19,16 +21,18 @@ function PestReports() {
     const isAdmin = currentUser?.role === "admin";
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/api/reports`)
-            .then((res) => res.json())
-            .then((data) => {
+        const fetchAllReports = async () => {
+            try {
+                const data = await getReports();
                 setReports(data);
-                setLoading(false);
-            })
-            .catch((err) => {
+            } catch (err) {
                 console.error("Error fetching reports:", err);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchAllReports();
     }, []);
 
     const handleDeleteReport = async (reportId) => {
@@ -44,22 +48,7 @@ function PestReports() {
         if (!confirmed) return;
 
         try {
-            const res = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    currentUserId: currentUser.id,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                alert(data.error || "Failed to delete report.");
-                return;
-            }
+            await deleteReport(reportId, currentUser.id);
 
             setReports((prev) => prev.filter((report) => report.id !== reportId));
 
@@ -70,7 +59,7 @@ function PestReports() {
             alert("Report deleted successfully.");
         } catch (error) {
             console.error("Delete report error:", error);
-            alert("Server error.");
+            alert(error.message || "Server error.");
         }
     };
 

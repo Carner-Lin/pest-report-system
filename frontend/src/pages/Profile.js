@@ -5,8 +5,12 @@ import {
     getDisplayPestName,
     getDisplayDate,
 } from "../utils/reportHelpers";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import {
+    getUserReports,
+    getNotedReports,
+    deleteReport,
+    removeNotedReport,
+} from "../services/api";
 
 // This page shows the current user's profile and saved reports.
 function Profile() {
@@ -21,27 +25,24 @@ function Profile() {
     useEffect(() => {
         if (!currentUser?.id) return;
 
-        fetch(`${API_BASE_URL}/api/reports/user/${currentUser.id}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setMyReports(data);
-                setLoadingMyReports(false);
-            })
-            .catch((err) => {
-                console.error("Error fetching my reports:", err);
-                setLoadingMyReports(false);
-            });
+        const fetchProfileData = async () => {
+            try {
+                const [userReports, savedReports] = await Promise.all([
+                    getUserReports(currentUser.id),
+                    getNotedReports(currentUser.id),
+                ]);
 
-        fetch(`${API_BASE_URL}/api/reports/noted/${currentUser.id}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setNotedReports(data);
+                setMyReports(userReports);
+                setNotedReports(savedReports);
+            } catch (err) {
+                console.error("Error fetching profile data:", err);
+            } finally {
+                setLoadingMyReports(false);
                 setLoadingNotedReports(false);
-            })
-            .catch((err) => {
-                console.error("Error fetching noted reports:", err);
-                setLoadingNotedReports(false);
-            });
+            }
+        };
+
+        fetchProfileData();
     }, [currentUser]);
 
     const handleDeleteReport = async (reportId) => {
@@ -57,22 +58,7 @@ function Profile() {
         if (!confirmed) return;
 
         try {
-            const res = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    currentUserId: currentUser.id,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                alert(data.error || "Failed to delete report.");
-                return;
-            }
+            await deleteReport(reportId, currentUser.id);
 
             setMyReports((prev) => prev.filter((report) => report.id !== reportId));
             setNotedReports((prev) => prev.filter((report) => report.id !== reportId));
@@ -84,7 +70,7 @@ function Profile() {
             alert("Report deleted successfully.");
         } catch (error) {
             console.error("Delete report error:", error);
-            alert("Server error.");
+            alert(error.message || "Server error.");
         }
     };
 
@@ -101,19 +87,7 @@ function Profile() {
         if (!confirmed) return;
 
         try {
-            const res = await fetch(
-                `${API_BASE_URL}/api/reports/${reportId}/note/${currentUser.id}`,
-                {
-                    method: "DELETE",
-                }
-            );
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                alert(data.error || "Failed to remove note.");
-                return;
-            }
+            await removeNotedReport(reportId, currentUser.id);
 
             setNotedReports((prev) => prev.filter((report) => report.id !== reportId));
 
@@ -124,7 +98,7 @@ function Profile() {
             alert("Note removed successfully.");
         } catch (error) {
             console.error("Remove note error:", error);
-            alert("Server error.");
+            alert(error.message || "Server error.");
         }
     };
 

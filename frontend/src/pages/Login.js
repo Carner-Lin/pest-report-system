@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { loginUser } from "../services/api";
 
+// This page handles user login.
 function Login() {
     const [formData, setFormData] = useState({
         email: "",
@@ -23,20 +24,7 @@ function Login() {
         setSuccess(false);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/api/users/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setMessage(data.error || "Login failed.");
-                return;
-            }
+            const data = await loginUser(formData);
 
             setSuccess(true);
             setMessage("Login successful.");
@@ -45,7 +33,7 @@ function Login() {
             window.dispatchEvent(new Event("userChanged"));
         } catch (error) {
             console.error("Login error:", error);
-            setMessage("Server error.");
+            setMessage(error.message || "Server error.");
         }
     };
 
@@ -80,6 +68,7 @@ function Login() {
                     <button type="submit" className="auth-submit-btn">
                         Login
                     </button>
+
                     <div className="auth-switch-text">
                         Don’t have an account? <Link to="/register">Register</Link>
                     </div>

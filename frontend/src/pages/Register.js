@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { registerUser } from "../services/api";
 
+// This page handles new user registration.
 function Register() {
     const [formData, setFormData] = useState({
         username: "",
@@ -24,20 +25,7 @@ function Register() {
         setSuccess(false);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/api/users/register`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                setMessage(data.error || "Registration failed.");
-                return;
-            }
+            await registerUser(formData);
 
             setSuccess(true);
             setMessage("Registration successful.");
@@ -49,7 +37,7 @@ function Register() {
             });
         } catch (error) {
             console.error("Register error:", error);
-            setMessage("Server error.");
+            setMessage(error.message || "Server error.");
         }
     };
 
@@ -95,6 +83,7 @@ function Register() {
                     <button type="submit" className="auth-submit-btn">
                         Register
                     </button>
+
                     <div className="auth-switch-text">
                         Already have an account? <Link to="/login">Login</Link>
                     </div>
