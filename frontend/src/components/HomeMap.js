@@ -5,12 +5,15 @@ import {
     AdvancedMarker,
 } from "@vis.gl/react-google-maps";
 
-import insectIcon from "../assets/markers/insect.svg";
-import mammalIcon from "../assets/markers/mammal.svg";
-import plantIcon from "../assets/markers/plant.svg";
-import birdIcon from "../assets/markers/bird.svg";
-import spiderIcon from "../assets/markers/spider.svg";
-import otherIcon from "../assets/markers/other.svg";
+import {
+    getMarkerIconByType,
+    insectIcon,
+    mammalIcon,
+    plantIcon,
+    birdIcon,
+    spiderIcon,
+    otherIcon,
+} from "../utils/mapHelpers";
 import { getDisplayPestName } from "../utils/reportHelpers";
 
 const DEFAULT_CENTER = { lat: -37.787, lng: 175.279 };
@@ -39,19 +42,6 @@ function MapController({ focusReport }) {
     }, [map, focusReport]);
 
     return null;
-}
-
-// This helper chooses a marker icon based on pest type.
-function getMarkerIconByType(report) {
-    const pestType = (report.pest_type || report.organism_type || "").toLowerCase();
-
-    if (pestType.includes("insect")) return insectIcon;
-    if (pestType.includes("mammal")) return mammalIcon;
-    if (pestType.includes("plant")) return plantIcon;
-    if (pestType.includes("bird")) return birdIcon;
-    if (pestType.includes("spider")) return spiderIcon;
-
-    return otherIcon;
 }
 
 // This component renders the report markers and popup on the home map.
