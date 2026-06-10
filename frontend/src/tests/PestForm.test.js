@@ -1,21 +1,35 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PestForm from "../components/PestForm";
 
-jest.mock("../components/LocationPickerMap", () => ({ onSelectLocation }) => (
-    <div>
-        <p>Mock Location Picker</p>
-        <button
-            onClick={() =>
-                onSelectLocation({
-                    lat: -37.787,
-                    lng: 175.279,
-                })
-            }
-        >
-            Pick Mock Location
-        </button>
-    </div>
-));
+jest.mock("../components/pestForm/PestLocationSection", () => ({
+    __esModule: true,
+    default: ({ onSelectLocation, onUseTypedLocation, locationMessage, formData, onChange }) => (
+        <div>
+            <p>Mock PestLocationSection</p>
+            <input
+                placeholder="Mock location input"
+                name="location_name"
+                value={formData.location_name}
+                onChange={onChange}
+            />
+            <button
+                type="button"
+                onClick={() =>
+                    onSelectLocation({
+                        lat: -37.787,
+                        lng: 175.279,
+                    })
+                }
+            >
+                Pick Mock Location
+            </button>
+            <button type="button" onClick={onUseTypedLocation}>
+                Mock Locate
+            </button>
+            {locationMessage && <p>{locationMessage}</p>}
+        </div>
+    ),
+}));
 
 describe("PestForm", () => {
     beforeEach(() => {
@@ -30,7 +44,7 @@ describe("PestForm", () => {
         );
     });
 
-    test("loads pests and renders form fields", async () => {
+    test("loads pests and renders split sections", async () => {
         fetch.mockResolvedValue({
             json: async () => [
                 {
@@ -46,8 +60,9 @@ describe("PestForm", () => {
 
         render(<PestForm />);
 
-        expect(await screen.findByText("Upload pest image")).toBeInTheDocument();
-        expect(screen.getByText("Mock Location Picker")).toBeInTheDocument();
+        expect(await screen.findByText("Report details")).toBeInTheDocument();
+        expect(screen.getByText("Upload pest image")).toBeInTheDocument();
+        expect(screen.getByText("Mock PestLocationSection")).toBeInTheDocument();
     });
 
     test("selecting a pest from database autofills fields", async () => {
@@ -90,13 +105,31 @@ describe("PestForm", () => {
         ).toBeInTheDocument();
     });
 
-    test("submits a report successfully", async () => {
+    test("shows validation message when location is missing", async () => {
+        fetch.mockResolvedValue({
+            json: async () => [],
+        });
+
+        render(<PestForm />);
+
+        fireEvent.change(await screen.findByPlaceholderText("Enter pest name"), {
+            target: { value: "Test Pest" },
+        });
+
+        fireEvent.click(screen.getByText("Submit Report"));
+
+        expect(
+            screen.getByText("Please select a location on the map or validate the address.")
+        ).toBeInTheDocument();
+    });
+
+    test("submits a report successfully with image", async () => {
         const onSuccess = jest.fn();
 
         fetch
             .mockResolvedValueOnce({
                 json: async () => [],
-            })
+            }) // initial /api/pests
             .mockResolvedValueOnce({
                 json: async () => ({
                     address: {
@@ -105,15 +138,26 @@ describe("PestForm", () => {
                         state: "Waikato",
                     },
                 }),
-            })
+            }) // reverse geocoding after map click
             .mockResolvedValueOnce({
-                json: async () => ({ message: "Report submitted successfully." }),
-            });
+                ok: true,
+                json: async () => ({
+                    message: "Report submitted successfully.",
+                    image_url: "http://localhost:5000/uploads/test.jpg",
+                }),
+            }); // final report submit
 
-        render(<PestForm onSuccess={onSuccess} />);
+        const { container } = render(<PestForm onSuccess={onSuccess} />);
 
         fireEvent.change(await screen.findByPlaceholderText("Enter pest name"), {
             target: { value: "Test Pest" },
+        });
+
+        const file = new File(["image"], "test.jpg", { type: "image/jpeg" });
+        const input = container.querySelector("#pest-image-upload");
+
+        fireEvent.change(input, {
+            target: { files: [file] },
         });
 
         fireEvent.click(screen.getByText("Pick Mock Location"));
@@ -124,7 +168,19 @@ describe("PestForm", () => {
 
         fireEvent.click(screen.getByText("Submit Report"));
 
-        expect(await screen.findByText("Report submitted successfully.")).toBeInTheDocument();
+        expect(
+            await screen.findByText("Report submitted successfully.")
+        ).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(fetch).toHaveBeenLastCalledWith(
+                expect.stringContaining("/api/reports"),
+                expect.objectContaining({
+                    method: "POST",
+                    body: expect.any(FormData),
+                })
+            );
+        });
     });
 
     test("identifies pest with AI after image upload", async () => {
