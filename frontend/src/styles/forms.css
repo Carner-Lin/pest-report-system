@@ -1,0 +1,482 @@
+/* Form controls, submit report modal, pest form, auth pages, upload, AI, and location picker styles. */
+
+/* Shared form element styles */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Location picker map */
+.location-picker-map {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #dcdcdc;
+  margin-top: 8px;
+  overscroll-behavior: contain;
+}
+
+.location-picker-wrapper {
+  width: 100%;
+}
+
+.current-location-btn {
+  margin-bottom: 10px;
+  padding: 8px 14px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.current-location-btn:hover {
+  background-color: #1c4e1e;
+}
+
+
+/* Image upload and AI section */
+.submit-image-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.custom-file-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 15px;
+  color: #000;
+}
+
+.custom-file-btn:hover {
+  background: #f3f3f3;
+}
+
+.custom-file-name {
+  font-size: 15px;
+  color: #333;
+}
+
+.ai-identify-btn {
+  padding: 8px 12px;
+  background: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.ai-identify-btn:hover {
+  background: #1c4e1e;
+}
+
+.ai-identify-btn:disabled {
+  background: #7f9a87;
+  cursor: not-allowed;
+}
+
+.ai-result-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(7, 67, 37, 0.2);
+  border-radius: 8px;
+  background: rgba(7, 67, 37, 0.04);
+}
+
+.ai-result-box p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #333;
+}
+
+.ai-result-note {
+  color: #666;
+  font-style: italic;
+}
+
+/* Submit report modal */
+.submit-report-modal {
+  position: relative;
+  background: rgba(7, 67, 37, 0.93);
+  width: 92%;
+  max-width: 1050px;
+  border-radius: 12px;
+  padding: 0;
+  box-sizing: border-box;
+  max-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 3px solid rgba(7, 67, 37, 0.93);
+  box-shadow: 0 6px 18px rgba(7, 67, 37, 0.18);
+}
+
+.submit-report-header-bar {
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  margin: 0;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit-report-header-bar h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  line-height: 1.2;
+}
+
+.submit-report-close-btn {
+  color: white;
+}
+
+.submit-report-body {
+  background: white;
+  padding: 14px 22px 20px 22px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.submit-report-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-report-top {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.submit-report-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.submit-report-right {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Basic form panel for split PestForm */
+.submit-basic-box {
+  width: 100%;
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  padding: 14px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.submit-basic-box h4 {
+  margin: 0 0 12px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 18px;
+}
+
+/* Shared field block */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label,
+.submit-form-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.submit-image-box {
+  width: 100%;
+  min-height: 260px;
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+  background: rgba(7, 67, 37, 0.04);
+}
+
+.submit-image-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.submit-file-input {
+  margin-bottom: 12px;
+}
+
+.submit-image-preview-box {
+  width: 100%;
+  min-height: 220px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.submit-image-preview {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+}
+
+.submit-image-placeholder {
+  color: #777;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Location block in split PestForm */
+.submit-report-map-section {
+  margin-top: 6px;
+}
+
+.submit-report-map-section h4 {
+  margin: 0 0 8px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 18px;
+}
+
+.submit-inline-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.location-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.location-input-row input {
+  flex: 1;
+}
+
+.location-search-btn {
+  margin-top: 5px;
+  padding: 8px 12px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.location-search-btn:hover {
+  background-color: #1c4e1e;
+}
+
+.location-error-text {
+  margin-top: 6px;
+  margin-bottom: 0;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.selected-coordinates-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.submit-report-btn {
+  margin-top: 9px;
+  align-self: flex-start;
+  padding: 10px 18px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.submit-report-btn:hover {
+  background-color: rgba(7, 67, 37, 1);
+}
+
+.submit-report-message {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #444;
+}
+
+
+/* Auth page styles */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: rgba(7, 67, 37, 0.93);
+}
+
+.auth-field {
+  margin-bottom: 16px;
+}
+
+.auth-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 7px;
+}
+
+.auth-submit-btn:hover {
+  background-color: #1c4e1e;
+}
+
+.auth-success {
+  margin-top: 14px;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 14px;
+}
+
+.auth-error {
+  margin-top: 14px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.auth-switch-text {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+}
+
+.auth-switch-text a {
+  color: rgba(7, 67, 37, 0.93);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-switch-text a:hover {
+  text-decoration: underline;
+}
+
+
+/* Login prompt modal */
+.login-prompt-modal {
+  position: relative;
+  width: 90%;
+  max-width: 360px;
+  background: white;
+  border: 2px solid rgba(7, 67, 37, 0.93);
+  border-radius: 12px;
+  padding: 24px 20px 20px 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.login-prompt-modal h3 {
+  margin: 0 0 12px 0;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 20px;
+}
+
+.login-prompt-modal p {
+  margin: 0 0 18px 0;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.login-prompt-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 26px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.to-login-link {
+  display: inline-block;
+  color: rgba(7, 67, 37, 0.93);
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.to-login-link:hover {
+  text-decoration: underline;
+}
+

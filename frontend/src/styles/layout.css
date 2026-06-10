@@ -1,0 +1,177 @@
+/* Shared application layout, navigation, modal, and button styles. */
+
+/* Page base styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: white;
+}
+
+.app-container {
+  min-height: 100vh;
+  background: white;
+}
+
+/* Top navigation bar */
+.navbar {
+  height: 75px;
+  background-color: rgba(7, 67, 37, 0.93);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px 0 30px;
+  box-sizing: border-box;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-title {
+  margin: 0;
+  margin-right: 40px;
+  font-size: 21px;
+  font-weight: bold;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+}
+
+.navbar-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  min-width: 150px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+.nav-btn:hover {
+  text-decoration: underline;
+}
+
+/* Main page container */
+.main-content {
+  padding: 40px;
+  background: white;
+}
+
+.main-content h2 {
+  margin-top: 1px;
+}
+
+.top-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+
+/* Shared button defaults */
+
+button {
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+}
+
+/* Shared modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Shared close button */
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* User menu */
+.nav-user-text {
+  color: white;
+  font-size: 16px;
+  padding: 8px 12px;
+  font-weight: bold;
+}
+
+.nav-user-menu {
+  position: relative;
+}
+
+.nav-user-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: bold;
+  margin-right: 27px;
+}
+
+.nav-user-dropdown {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  min-width: 140px;
+  background: white;
+  border: 1px solid rgba(7, 67, 37, 0.93);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.nav-user-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  background: white;
+  color: rgba(7, 67, 37, 0.93);
+  text-decoration: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+}
+
+.nav-user-dropdown-item:hover {
+  background: rgba(7, 67, 37, 0.08);
+}
+
+.logout-item {
+  cursor: pointer;
+}
+

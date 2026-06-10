@@ -1,7 +1,12 @@
 import { Link, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import "./App.css";
+import "./styles/layout.css";
+import "./styles/home.css";
+import "./styles/reports.css";
+import "./styles/forms.css";
+import "./styles/profile.css";
+import "./styles/responsive.css";
 import Home from "./pages/Home";
 import PestReports from "./pages/PestReports";
 import PestEncyclopedia from "./pages/PestEncyclopedia";
