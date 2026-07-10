@@ -180,26 +180,6 @@ After setup is complete, run the application in this order:
 
 The backend must be running before the frontend can load API data.
 
-## Running From Submitted Source Code
-
-The submitted source code does not include installed dependencies or real `.env` files.
-After extracting the project, restore dependencies with:
-
-```bash
-cd backend
-npm install
-```
-
-```bash
-cd frontend
-npm install
-```
-
-The real `.env` files are not included for security reasons because they contain local
-passwords and API keys. Create `backend/.env` and `frontend/.env` from the matching
-`.env.example` files, then fill in the local MySQL password, Google Maps API key,
-and Gemini API key before running the application.
-
 ## Useful Commands
 
 Run backend tests:
